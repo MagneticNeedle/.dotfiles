@@ -1,0 +1,182 @@
+// -*- mode: jsonc -*-
+[{
+    "layer": "bottom", // Waybar at top layer
+    "position": "top",
+    "output": "DP-1",   
+    "spacing": 0, // Gaps between modules (4px)
+    "height": 20,
+    "reload_style_on_change": true,
+    // "position": "bottom", // Waybar position (top|bottom|left|right)
+    
+    "modules-left": [
+        "custom/power",
+        "mpris"
+    ],
+    "modules-right": [
+        "cpu",
+        "memory",
+        "custom/edit-config",
+        "idle_inhibitor",
+        "network",
+        "tray",
+        "pulseaudio/slider",
+        "clock"
+    ],
+    "custom/edit-config": {
+        "interval": "once",
+        "tooltip": false,
+        "format": "<span font='10'>󱇧</span>",
+        "menu": "on-click",
+        "menu-file": "$HOME/.config/waybar/edit_config.xml", // Menu file in resources folder
+        "menu-actions": {
+            "waybar-config": "nohup alacritty -e nvim $HOME/.config/waybar/config.jsonc >/dev/null 2>&1 &",
+            "waybar-style": "nohup alacritty -e nvim $HOME/.config/waybar/style.css >/dev/null 2>&1 &",
+            "niri-config":"nohup alacritty -e nvim $HOME/.config/niri/config.kdl>/dev/null 2>&1 &"  
+        }
+    },
+
+    "custom/firefox": {
+        "interval": "once",
+        "format": "<span font='10' rise='-3000'></span>{}",
+        "on-click": "firefox-developer-edition -P",
+        "tooltip": false
+    },
+    "mpris": {
+        "interval": 1,
+        "format": "{title}  {artist}",
+        "format-paused": "{status_icon} {title}",
+        "status-icons": {
+            "paused": "⏸"
+        }
+//        "player": "kdeconnect.mpris_dc23afbcb19a43598a25191cbd3dc97c"
+    },
+    "hyprland/workspaces": {
+       "format": "{icon}",
+    "format-icons": {
+        "active":"",
+        "default": ""
+    },
+       "persistent-workspaces": {
+                 "DP-1": [1, 2, 3]
+          }
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 10
+    },
+    "clock": {
+        // "timezone": "America/New_York",
+        "tooltip-format": "<span font='15'>{:%Y %B}</span>\r<span font='13'>{calendar}</span>",
+        "format": "{:%a, %d. %b %r} "
+    },
+    "cpu": {
+        "format": " {usage}%",
+        "tooltip": false
+    },
+    "memory": {
+        "format": " {used}GiB"
+    },
+    "network": {
+        // "interface": "wlp2*", // (Optional) To force the use of this interface
+        "format-ethernet": "",
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+    "custom/vpn": {
+        "return-type": "json",
+        "interval": 1,
+        "format": "<span font='10' rise='-1800'>{}</span>",
+        "exec": "/home/gala/.local/bin/waybar-custom-vpn.sh",
+        "max-length": "100",
+        "on-click": "[ -d /sys/class/net/vpnMagnifi ] && nmcli connection down vpnMagnifi && sudo tailscale up || (sudo tailscale down && nmcli connection up vpnMagnifi)" 
+    },
+    "pulseaudio/slider": {
+        "min": 0,
+    "max": 100,
+    "orientation": "horizontal"
+    },
+    "pulseaudio": {
+        // "scroll-step": 1, // %, can be a float
+        "format": "{volume}% {icon} {format_source}",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+  "custom/notification": {
+    "tooltip": false,
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "<span foreground='red'><sup></sup></span>",
+      "none": "",
+      "dnd-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-none": "",
+      "inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-inhibited-none": ""
+    },
+    "return-type": "json",
+    "exec-if": "which swaync-client",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
+  },
+    "custom/power": {
+        "format" : " <span font='10'>⏻</span>",
+        "tooltip": false,
+        "menu": "on-click",
+        "menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
+        "menu-actions": {
+            "shutdown": "notify-send -h string:bgcolor:#000000 \"System is now going to shutdown\" && shutdown now",
+            "reboot": "reboot",
+            "suspend": "systemctl suspend",
+            "hibernate": "systemctl hibernate"
+        }
+    }
+}, {
+    "layer": "bottom", // Waybar at top layer
+    "position": "bottom",
+    "spacing": 0, // Gaps between modules (4px)
+    "height": 20,
+    "reload_style_on_change": true,
+    "output": "HDMI-A-1",
+    "modules-center": [
+        "hyprland/workspaces"
+    ],  
+    "hyprland/workspaces": {
+       "format": "{icon}",
+    "format-icons": {
+        "active":"",
+        "default": ""
+    },
+       "persistent-workspaces": {
+          "HDMI-A-1": [ 4, 5, 6 ]
+        }
+    }, 
+    "modules-right": [ "clock"],
+    "clock": {
+        "format-alt": "{:%a, %d. %b  %H:%M}"
+    }
+}]

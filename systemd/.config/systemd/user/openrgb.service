@@ -1,0 +1,10 @@
+[Unit]
+Description=OpenRGB control
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/openrgb -p mobo-double-flash-all-off 
+
+[Install]
+WantedBy=multi-user.target
+

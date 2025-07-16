@@ -1,0 +1,240 @@
+* {
+    font-family: "JetBrainsMono Nerd Font Propo";
+    font-size: 10px;
+}
+
+.modules-right {
+    background-color: rgba(43, 48, 59, 0.8);
+    background-color: transparent;
+    
+}
+/* comment */
+
+.modules-left .module,  
+.modules-right .module  {
+    margin: 0 5px 0 5px;
+    transition-property: box-shadow; 
+    transition-duration: 100ms;
+    
+/*	box-shadow: inset 0 -3px rgba(100, 114, 125, 0.5); */
+}
+
+.modules-left .module:hover,
+.modules-left .module>*:hover, 
+.modules-right .module:hover,
+.modules-right .module>*:hover {
+	box-shadow: inset 0 -3px white;
+}
+
+
+window#waybar {
+    background-color: rgba(70, 48, 59, 0);
+    border-bottom: 3px solid rgba(119, 119, 119, 0.8); 
+    color: #ffffff;
+    transition-property: background-color;
+    transition-duration: .5s;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+/*
+window#waybar.empty {
+    background-color: transparent;
+}
+window#waybar.solo {
+    background-color: transparent;
+}
+*/
+
+window#waybar.termite {
+    background-color: transparent;
+}
+
+window#waybar.chromium {
+    background-color: transparent;
+    border: none;
+}
+
+button {
+    /* Use box-shadow instead of border so the text isn't offset */
+    box-shadow: inset 0 -3px transparent;
+    /* Avoid rounded borders under each button name */
+    border: none;
+    border-radius: 0;
+}
+
+button:hover {
+	box-shadow: inset 0 -3px #ffffff;
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+/*
+button:hover {
+    background: #ffffff;
+    box-shadow: inset 0 -3px #ffffff;
+}
+*/
+tooltip {
+    background-color: rgba(43, 48, 59, 0.8);
+    box-shadow: none;
+    border: none;
+}
+tooltip * {
+    color: #ffffff;
+}
+/* you can set a style on hover for any module like this */
+#pulseaudio:hover {
+    background-color: #a37800;
+}
+
+#workspaces button {
+    transition-property: background-color;
+    transition-duration: .5s;
+    padding: 0 10px;
+    background-color: transparent; 
+    color: #ffffff;
+}
+
+#workspaces button:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+#workspaces button.active {
+    color: #333333;
+    background-color: #fcfaf9;
+    box-shadow: inset 0 -3px #333333;
+}
+
+#workspaces button.urgent {
+    background-color: #eb4d4b;
+}
+
+
+
+#window,
+#workspaces {
+    margin: 0 4px;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+    margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces {
+    margin-right: 0;
+}
+
+
+
+
+
+
+
+
+label:focus {
+    background-color: #000000;
+}
+
+
+#network.disconnected {
+    background-color: #f53c3c;
+}
+
+
+#pulseaudio.muted {
+    background-color: #90b1b1;
+    color: #2a5c45;
+}
+
+
+#wireplumber.muted {
+    background-color: #f53c3c;
+}
+
+
+
+
+
+
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background-color: #eb4d4b;
+}
+
+
+#idle_inhibitor.activated {
+    background-color: transparent;
+    color: #2d3436;
+}
+
+#mpd {
+    background-color: transparent;
+    color: #2a5c45;
+}
+
+#mpd.disconnected {
+    background-color: transparent;
+}
+
+#mpd.stopped {
+    background-color: #90b1b1;
+}
+
+#mpd.paused {
+    background-color: transparent;
+}
+
+#custom-vpn {
+/*    font-family: "JetBrainsMono Nerd Font"; 
+    font-size: 24px; */
+    background: transparent;
+    color: #ffffff;
+    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+#custom-vpn.connected {
+   color: green;
+}
+#custom-vpn.disconnected {
+   color: red;
+}
+#custom-notification {
+  font-family: "NotoSansMono Nerd Font";
+}
+
+#custom-firefox {
+    background: transparent;
+    color: #4e99fe;
+}
+
+#pulseaudio-slider slider {
+    min-height: 0px;
+    min-width: 0px;
+    opacity: 0;
+    margin: -6px;
+    background: #48e5c2;
+    border: none;
+    box-shadow: none;
+}
+#pulseaudio-slider trough {
+    min-height: 5px;
+    min-width: 80px;
+    border-radius: 5px;
+    border-color: transparent;
+    background: #333333;
+}
+#pulseaudio-slider highlight {
+    min-width: 5px;
+    border-radius: 5px;
+    border-color: transparent;
+    background-image: none;
+    background-color: #fcfaf9 ;
+}
