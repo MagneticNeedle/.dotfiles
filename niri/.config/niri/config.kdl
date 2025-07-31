@@ -36,7 +36,13 @@ overview {
 // TODO: add config for second monitor
 output "DP-1" {
     mode "1920x1080@165.003"
+
 }
+output "HDMI-A-1" {
+    mode "1920x1080@74.973"
+    transform "270"
+}
+
 
 layout {
     gaps 10 
