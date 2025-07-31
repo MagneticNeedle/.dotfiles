@@ -91,7 +91,7 @@ layout {
 }
 spawn-at-startup "waybar"
 prefer-no-csd
-screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+screenshot-path "~/Pictures/Screenshots/%Y-%m-%d %H-%M-%S.png"
 animations {
     slowdown 0.5
 }
