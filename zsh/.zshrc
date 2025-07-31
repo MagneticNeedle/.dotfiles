@@ -6,6 +6,7 @@ bindkey -v
 bindkey '^R' history-incremental-pattern-search-backward
 
 zstyle :compinstall filename '/home/magnetic-needle/.zshrc'
+zstyle ':completion:*' rehash true
 autoload -Uz compinit
 compinit
 
@@ -21,3 +22,4 @@ alias vim="nvim"
 alias v="nvim"
 
 . "$HOME/.cargo/env"
+export PATH="$HOME/.local/bin:$PATH"
