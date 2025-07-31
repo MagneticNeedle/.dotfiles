@@ -2,8 +2,6 @@
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=10000
-bindkey -v
-bindkey '^R' history-incremental-pattern-search-backward
 
 zstyle :compinstall filename '/home/magnetic-needle/.zshrc'
 zstyle ':completion:*' rehash true
@@ -23,3 +21,6 @@ alias v="nvim"
 
 . "$HOME/.cargo/env"
 export PATH="$HOME/.local/bin:$PATH"
+bindkey -v
+bindkey '^R' history-incremental-pattern-search-backward
+bindkey '^S' history-incremental-pattern-search-forward 
