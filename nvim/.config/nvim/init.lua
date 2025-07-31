@@ -17,7 +17,10 @@ vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.expandtab = true
 vim.o.softtabstop = 4
-vim.diagnostic.config({ virtual_text = true })
+vim.diagnostic.config({
+	underline = true,
+	update_in_insert = true,
+})
 vim.cmd.colorscheme("gruber-darker")
 vim.lsp.enable("basedpyright")
 vim.lsp.enable("lua_ls")
