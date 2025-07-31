@@ -21,6 +21,7 @@ alias v="nvim"
 
 . "$HOME/.cargo/env"
 export PATH="$HOME/.local/bin:$PATH"
+export GPG_TTY=$(tty)
 bindkey -v
 bindkey '^R' history-incremental-pattern-search-backward
 bindkey '^S' history-incremental-pattern-search-forward 
