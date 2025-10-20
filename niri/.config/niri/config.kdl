@@ -27,6 +27,10 @@ cursor {
 	hide-after-inactive-ms 1000
 }
 
+clipboard {
+    disable-primary
+}
+
 overview {
 	zoom 0.5
 	backdrop-color "#000000"
