@@ -1,3 +1,7 @@
+environment {
+    DISPLAY ":0"
+}
+
 input {
     keyboard {
         xkb {
@@ -90,6 +94,7 @@ layout {
     }
 }
 spawn-at-startup "waybar"
+spawn-at-startup "xwayland-satellite"
 prefer-no-csd
 screenshot-path "~/Pictures/Screenshots/%Y-%m-%d %H-%M-%S.png"
 animations {
