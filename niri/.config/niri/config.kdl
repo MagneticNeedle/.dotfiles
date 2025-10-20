@@ -41,7 +41,6 @@ overview {
 	}
 }
 
-// TODO: add config for second monitor
 output "DP-1" {
     mode "1920x1080@165.003"
 
@@ -127,10 +126,10 @@ binds {
     Mod+Shift+Slash {
         show-hotkey-overlay
     }
-    Mod+Q hotkey-overlay-title="Open a Terminal: alacritty" {
+    Mod+Shift+Q hotkey-overlay-title="Open a Terminal: alacritty" {
         spawn "alacritty"
     }
-    Mod+Shift+Q {
+    Mod+Q {
         spawn "sh" "-c" "alacritty --config-file=/home/magnetic-needle/.config/alacritty/alacritty_no_zellij.toml"
     }
     Mod+Space {
