@@ -367,7 +367,7 @@ binds {
         toggle-column-tabbed-display
     }
     Print {
-        screenshot
+	spawn "sh" "-c" "grim -g \"$(slurp)\" - | satty -f -"
     }
     Ctrl+Print {
         screenshot-screen
