@@ -98,11 +98,28 @@ layout {
 }
 spawn-at-startup "waybar"
 spawn-at-startup "xwayland-satellite"
+spawn-at-startup "easyeffects --gapplication-service"
+spawn-at-startup "blueman-applet"
 prefer-no-csd
 screenshot-path "~/Pictures/Screenshots/%Y-%m-%d %H-%M-%S.png"
 animations {
     slowdown 0.5
 }
+hotkey-overlay {
+    skip-at-startup
+}
+
+workspace "browser" {
+    open-on-output "DP-1"
+}
+workspace "code" {
+    open-on-output "DP-1"
+}
+workspace "chat" {
+    open-on-output "DP-1"
+}
+
+
 window-rule {
     match app-id="^org\\.wezfurlong\\.wezterm$"
     default-column-width {
@@ -110,8 +127,26 @@ window-rule {
     }
 }
 window-rule {
-    match app-id="firefox$" title="^Picture-in-Picture$"
+    match app-id="^firefox-developer-edition$" title="^Picture-in-Picture$"
     open-floating true
+}
+window-rule {
+    match app-id="^firefox-developer-edition$"
+    open-maximized true
+    open-on-workspace "browser"
+}
+window-rule {
+    match app-id="^vesktop$"
+    open-on-workspace "chat"
+    open-maximized true
+}
+window-rule {
+    match app-id="^jetbrains-pycharm$"
+    match app-id="^VSCodium$"
+    match app-id="^cursor$"
+
+    open-maximized true
+    open-on-workspace "code"
 }
 /-window-rule {
 match app-id=r#"^org\.keepassxc\.KeePassXC$"#
@@ -259,13 +294,13 @@ binds {
         move-column-to-monitor-right
     }
     Mod+1 {
-        focus-workspace 1
+        focus-workspace "browser"
     }
     Mod+2 {
-        focus-workspace 2
+        focus-workspace "code"
     }
     Mod+3 {
-        focus-workspace 3
+        focus-workspace "chat"
     }
     Mod+4 {
         focus-workspace 4
@@ -286,13 +321,13 @@ binds {
         focus-workspace 9
     }
     Mod+Ctrl+1 {
-        move-column-to-workspace 1
+        move-column-to-workspace "browser"
     }
     Mod+Ctrl+2 {
-        move-column-to-workspace 2
+        move-column-to-workspace "code"
     }
     Mod+Ctrl+3 {
-        move-column-to-workspace 3
+        move-column-to-workspace "chat"
     }
     Mod+Ctrl+4 {
         move-column-to-workspace 4
