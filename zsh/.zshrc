@@ -18,9 +18,12 @@ source $ZSH/oh-my-zsh.sh
 
 alias vim="nvim"
 alias v="nvim"
+alias ls="ls -hoag --color=auto"
 
 . "$HOME/.cargo/env"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="/opt/pycharm-eap/bin:$PATH"
+
 export GPG_TTY=$(tty)
 bindkey -v
 bindkey '^R' history-incremental-pattern-search-backward
