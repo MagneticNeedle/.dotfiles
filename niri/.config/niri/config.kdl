@@ -149,6 +149,7 @@ window-rule {
 
 window-rule {
     match app-id="^firefox-developer-edition$"
+    match app-id="^google-chrome$"
     open-maximized true
     open-on-workspace "browser"
 }
