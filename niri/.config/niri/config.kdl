@@ -100,6 +100,8 @@ spawn-at-startup "waybar"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "easyeffects --gapplication-service"
 spawn-at-startup "blueman-applet"
+spawn-at-startup "linear-linux"
+spawn-at-startup "kdeconnect-indicator"
 spawn-at-startup "python3" "/home/bb/.config/niri/scripts/move-meet-popup.py"
 
 prefer-no-csd
@@ -162,6 +164,13 @@ window-rule {
 
     open-maximized true
     open-on-workspace "code"
+}
+
+window-rule {
+    match app-id="^slack$"
+    match app-id="^linear-linux$"
+    open-on-workspace "vert"
+    open-maximized true
 }
 /-window-rule {
 match app-id=r#"^org\.keepassxc\.KeePassXC$"#
