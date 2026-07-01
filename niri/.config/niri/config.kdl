@@ -165,7 +165,7 @@ binds {
         spawn "alacritty"
     }
     Mod+Q {
-        spawn "sh" "-c" "alacritty --config-file=/home/magnetic-needle/.config/alacritty/alacritty_no_zellij.toml"
+        spawn "sh" "-c" "alacritty --config-file=/home/bb/.config/alacritty/alacritty_no_zellij.toml"
     }
     Mod+Space {
         spawn "bemenu-run" "-H" "20" "-p" "" "--fn" "'Iosevka Term 12'" "--list" "5" "-b" "-i" "--single-instance"
