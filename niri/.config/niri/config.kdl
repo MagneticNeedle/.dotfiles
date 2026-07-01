@@ -100,6 +100,8 @@ spawn-at-startup "waybar"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "easyeffects --gapplication-service"
 spawn-at-startup "blueman-applet"
+spawn-at-startup "python3" "/home/bb/.config/niri/scripts/move-meet-popup.py"
+
 prefer-no-csd
 screenshot-path "~/Pictures/Screenshots/%Y-%m-%d %H-%M-%S.png"
 animations {
@@ -118,6 +120,9 @@ workspace "code" {
 workspace "chat" {
     open-on-output "DP-1"
 }
+workspace "vert" {
+    open-on-output "HDMI-A-1"
+}
 
 
 window-rule {
@@ -130,6 +135,16 @@ window-rule {
     match app-id="^firefox-developer-edition$" title="^Picture-in-Picture$"
     open-floating true
 }
+// The Meet pop-out is moved to HDMI-A-1 by scripts/move-meet-popup.py:
+// niri decides a window's output at map time, but Chrome renames the pop-out
+// to "Meet - ..." only after mapping, so open-on-output can't catch it here.
+window-rule {
+    match app-id="^google-chrome$" title="^Meet - "
+    exclude title=" - Google Chrome$"
+    open-floating true
+    open-focused false
+}
+
 window-rule {
     match app-id="^firefox-developer-edition$"
     open-maximized true
