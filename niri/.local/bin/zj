@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""zj - launch (or re-attach to) a zellij dev session for a project."""
+import argparse
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+PROJECTS_DIR = Path(os.environ.get("PROJECTS_DIR", Path.home() / "Projects"))
+
+
+def resolve_dir(arg: str | None) -> Path:
+    if not arg:
+        return Path.cwd()
+    p = Path(arg)
+    if p.is_dir():
+        return p.resolve()
+    if (PROJECTS_DIR / arg).is_dir():
+        return PROJECTS_DIR / arg
+    sys.exit(f"zj: no such project '{arg}' (looked in $PWD and {PROJECTS_DIR})")
+
+
+def existing_sessions() -> list[str]:
+    try:
+        out = subprocess.run(
+            ["zellij", "list-sessions", "-sn"],
+            capture_output=True, text=True,
+        ).stdout
+    except FileNotFoundError:
+        sys.exit("zj: zellij is not installed or not on PATH")
+    return out.split()
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        prog="zj",
+        description="Launch (or re-attach to) a zellij dev session for a project.",
+    )
+    parser.add_argument(
+        "project",
+        nargs="?",
+        help="a dir under ~/Projects, an explicit path, or omitted (uses $PWD)",
+    )
+    parser.add_argument(
+        "-l", "--layout",
+        default=os.environ.get("ZJ_LAYOUT", "dev"),
+        help="zellij layout name to use (default: %(default)s). "
+             "Overridden by a project's own .zellij/layout.kdl if present.",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    dir_ = resolve_dir(args.project)
+    session = re.sub(r"[^A-Za-z0-9_-]", "-", dir_.name)
+
+    if session in existing_sessions():
+        os.execvp("zellij", ["zellij", "attach", session, "--force-run-commands" ])
+
+    # Use --new-session-with-layout (not --layout): with --session set, --layout
+    # is interpreted as "add tabs to the session" rather than starting a new
+    # session with the layout. See zellij-org/zellij#3734.
+    local_layout = dir_ / ".zellij" / "layout.kdl"
+    layout = str(local_layout) if local_layout.is_file() else args.layout
+
+    os.chdir(dir_)
+    os.execvp(
+        "zellij",
+        ["zellij", "--session", session, "--new-session-with-layout", layout],
+    )
+
+
+if __name__ == "__main__":
+    main()
