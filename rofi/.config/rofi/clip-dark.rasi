@@ -1,0 +1,85 @@
+/* Dark lime theme for the clipvault clipboard picker.
+ * The accent is taken from the niri focus-ring gradient (#E3E319 -> #3FAB05).
+ * Opaque on purpose: clipboard entries are dense text, and translucency lets
+ * whatever is behind the menu bleed through and muddy them. */
+
+* {
+    bg:       #0D0F14;
+    bg-alt:   #161A23;
+    bg-input: #1C212C;
+    fg:       #D7DCE4;
+    fg-dim:   #8B94A6;
+    accent:   #C6E22E;
+    bar:      #2F4415;
+    ink:      #0D0F14;
+
+    font:             "Iosevka Term 13";
+    background-color: transparent;
+    text-color:       @fg-dim;
+}
+
+window {
+    width:            30%;
+    location:         center;
+    anchor:           center;
+    background-color: @bg;
+    border:           2px;
+    border-color:     @accent;
+    border-radius:    12px;
+    padding:          0;
+    children:         [ mainbox ];
+}
+
+mainbox {
+    padding:  0;
+    spacing:  0;
+    children: [ inputbar, listview ];
+}
+
+inputbar {
+    background-color: @bg-input;
+    padding:          10px 14px;
+    children:         [ entry ];
+}
+
+entry {
+    text-color:        @fg;
+    placeholder:       "Search clipboard";
+    placeholder-color: @fg-dim;
+    cursor:            text;
+}
+
+listview {
+    lines:        10;
+    fixed-height: true;
+    scrollbar:    true;
+    padding:      6px 0;
+    spacing:      0;
+}
+
+scrollbar {
+    background-color: @bg-alt;
+    handle-color:     @bar;
+    handle-width:     4px;
+}
+
+element {
+    padding:  4px 14px;
+    spacing:  10px;
+    children: [ element-icon, element-text ];
+}
+
+element normal.normal    { background-color: @bg;     text-color: @fg-dim; }
+element alternate.normal { background-color: @bg-alt; text-color: @fg-dim; }
+element selected.normal  { background-color: @accent; text-color: @ink;    }
+
+/* Image entries get a thumbnail here; text entries leave it blank, which keeps
+ * every row's text aligned on the same left edge. */
+element-icon {
+    size:           24px;
+    vertical-align: 0.5;
+}
+
+element-text {
+    vertical-align: 0.5;
+}
