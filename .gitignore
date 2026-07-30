@@ -1,0 +1,8 @@
+# Python bytecode from scripts under */.local/bin
+__pycache__/
+*.py[cod]
+
+# Editor / OS scratch
+*.swp
+*~
+.DS_Store
