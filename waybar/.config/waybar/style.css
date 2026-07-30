@@ -210,6 +210,20 @@ label:focus {
   font-family: "NotoSansMono Nerd Font";
 }
 
+#custom-claude {
+    background: transparent;
+    color: #d97757;
+}
+#custom-claude.warning {
+    color: #e8b923;
+}
+#custom-claude.critical {
+    color: #eb4d4b;
+}
+#custom-claude.unknown {
+    color: #777777;
+}
+
 #custom-firefox {
     background: transparent;
     color: #4e99fe;

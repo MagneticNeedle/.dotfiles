@@ -1,0 +1,309 @@
+#!/usr/bin/env python3
+"""waybar-claude-usage - show Claude subscription limit usage in waybar.
+
+Prints one line of waybar JSON: the 5-hour session window and the weekly
+window, as percentages of the plan limit. Same numbers Claude Code's /usage
+shows, from the same endpoint.
+
+Auth piggybacks on the OAuth token Claude Code already stores in
+~/.claude/.credentials.json - nothing to configure, but it does mean the
+numbers go stale if that token expires (fixed by using Claude Code again,
+which refreshes it).
+
+The last good response is cached, so a flaky network keeps the previous
+numbers on the bar instead of blanking it. A cached reading older than
+STALE_AFTER is marked with a degree sign.
+
+The usage endpoint is rate limited tightly: measured at roughly four calls
+before it answers 429 with `Retry-After: 300`, i.e. a five-minute lockout.
+So the API call rate is decided here, not by waybar's interval - the cache is
+served until it is MIN_FETCH_INTERVAL old, and a 429 parks fetching until its
+Retry-After passes. That makes the module safe to poll often (which keeps the
+reset countdowns moving) and safe to click repeatedly.
+
+The cache file is therefore the rate governor shared by every caller, so a
+manual run cooperates with the bar's. Two callers can still race through the
+staleness check and both fetch; the burst allowance covers that, which is part
+of why MIN_FETCH_INTERVAL sits well below the limit rather than just under it.
+"""
+
+import json
+import os
+import sys
+import time
+import urllib.error
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+
+CREDENTIALS = Path.home() / ".claude" / ".credentials.json"
+CACHE = (
+    Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    / "waybar-claude-usage.json"
+)
+
+USAGE_URL = "https://api.anthropic.com/api/oauth/usage"
+OAUTH_BETA = "oauth-2025-04-20"
+TIMEOUT = 10
+
+MIN_FETCH_INTERVAL = 120  # seconds; floor on real API calls, see module docstring
+FALLBACK_BACKOFF = 300  # used when a 429 arrives without a usable Retry-After
+STALE_AFTER = 30 * 60  # cached reading is flagged past this age
+WARNING_AT = 70  # percent, drives the CSS class
+CRITICAL_AT = 90
+
+
+def read_token() -> str | None:
+    """The OAuth access token Claude Code stores, if it is still valid."""
+    try:
+        creds = json.loads(CREDENTIALS.read_text())
+    except (OSError, json.JSONDecodeError):
+        return None
+    oauth = creds.get("claudeAiOauth") or {}
+    token = oauth.get("accessToken")
+    if not token:
+        return None
+    # expiresAt is epoch milliseconds. Allow a little clock skew.
+    expires_at = oauth.get("expiresAt")
+    if isinstance(expires_at, (int, float)) and expires_at / 1000 < time.time() - 60:
+        return None
+    return token
+
+
+def fetch(token: str) -> dict:
+    request = urllib.request.Request(
+        USAGE_URL,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "anthropic-beta": OAUTH_BETA,
+            "Content-Type": "application/json",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+        return json.load(response)
+
+
+def retry_after(headers) -> float:
+    """Seconds to wait per a Retry-After header, as seconds or an HTTP date."""
+    value = (headers.get("Retry-After") or "").strip()
+    try:
+        return max(0.0, float(value))
+    except ValueError:
+        pass
+    try:
+        from email.utils import parsedate_to_datetime
+
+        return max(0.0, (parsedate_to_datetime(value) - datetime.now(timezone.utc)).total_seconds())
+    except (TypeError, ValueError):
+        return FALLBACK_BACKOFF
+
+
+def cache_load() -> dict:
+    """The stored response and its fetch bookkeeping; empty if unreadable."""
+    try:
+        cached = json.loads(CACHE.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return cached if isinstance(cached, dict) else {}
+
+
+def cache_store(cached: dict) -> None:
+    """Replace the cache atomically - overlapping ticks must not read a partial file."""
+    try:
+        CACHE.parent.mkdir(parents=True, exist_ok=True)
+        scratch = CACHE.with_suffix(f".{os.getpid()}.tmp")
+        scratch.write_text(json.dumps(cached))
+        scratch.replace(CACHE)
+    except OSError:
+        pass
+
+
+def number(value: object, default: float = 0.0) -> float:
+    return float(value) if isinstance(value, (int, float)) else default
+
+
+def limits_by_kind(usage: dict) -> dict[str, dict]:
+    """Index the `limits` array by kind, ignoring malformed entries."""
+    found = {}
+    for limit in usage.get("limits") or []:
+        if isinstance(limit, dict) and isinstance(limit.get("kind"), str):
+            found[limit["kind"]] = limit
+    return found
+
+
+def percent_of(usage: dict, kind: str, legacy_key: str) -> int | None:
+    """Percent used for one window, preferring `limits` over the older fields."""
+    limit = limits_by_kind(usage).get(kind) or {}
+    value = limit.get("percent")
+    if value is None:
+        value = (usage.get(legacy_key) or {}).get("utilization")
+    return round(value) if isinstance(value, (int, float)) else None
+
+
+def resets_at(usage: dict, kind: str, legacy_key: str) -> datetime | None:
+    limit = limits_by_kind(usage).get(kind) or {}
+    stamp = limit.get("resets_at") or (usage.get(legacy_key) or {}).get("resets_at")
+    if not isinstance(stamp, str):
+        return None
+    try:
+        parsed = datetime.fromisoformat(stamp)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
+def until(moment: datetime | None) -> str:
+    """`moment` as a short human distance from now, e.g. `3h 12m`."""
+    if moment is None:
+        return "unknown"
+    seconds = (moment - datetime.now(timezone.utc)).total_seconds()
+    if seconds <= 0:
+        return "now"
+    days, seconds = divmod(int(seconds), 86400)
+    hours, seconds = divmod(seconds, 3600)
+    minutes = seconds // 60
+    if days:
+        return f"{days}d {hours}h"
+    if hours:
+        return f"{hours}h {minutes}m"
+    return f"{minutes}m"
+
+
+def scoped_lines(usage: dict) -> list[str]:
+    """Per-model / per-surface weekly caps, which only some plans have."""
+    lines = []
+    for limit in usage.get("limits") or []:
+        if not isinstance(limit, dict) or limit.get("kind") != "weekly_scoped":
+            continue
+        percent = limit.get("percent")
+        if not isinstance(percent, (int, float)):
+            continue
+        scope = limit.get("scope") or {}
+        name = (scope.get("model") or {}).get("display_name") or (
+            scope.get("surface") or {}
+        ).get("display_name")
+        lines.append(f"  {name or 'scoped'}: {round(percent)}%")
+    return lines
+
+
+def render(usage: dict, age: float | None) -> dict:
+    session = percent_of(usage, "session", "five_hour")
+    weekly = percent_of(usage, "weekly_all", "seven_day")
+
+    def show(value: int | None) -> str:
+        return "?" if value is None else f"{value}%"
+
+    stale = "°" if age is not None and age > STALE_AFTER else ""
+    text = f"{show(session)} / {show(weekly)}{stale}"
+
+    worst = max((value for value in (session, weekly) if value is not None), default=0)
+    if worst >= CRITICAL_AT:
+        css_class = "critical"
+    elif worst >= WARNING_AT:
+        css_class = "warning"
+    else:
+        css_class = "normal"
+
+    tooltip = [
+        "<b>Claude usage</b>",
+        f"Session (5h): {show(session)} — resets in {until(resets_at(usage, 'session', 'five_hour'))}",
+        f"Week: {show(weekly)} — resets in {until(resets_at(usage, 'weekly_all', 'seven_day'))}",
+    ]
+    scoped = scoped_lines(usage)
+    if scoped:
+        tooltip += ["Weekly, per model:"] + scoped
+
+    extra = usage.get("extra_usage") or {}
+    if extra.get("is_enabled"):
+        spend = usage.get("spend") or {}
+        used = spend.get("used") or {}
+        amount = used.get("amount_minor")
+        exponent = used.get("exponent", 2)
+        if isinstance(amount, (int, float)):
+            tooltip.append(
+                f"Extra usage: {used.get('currency', '')} "
+                f"{amount / (10**exponent):.2f} spent"
+            )
+
+    # Most ticks render a cache a few seconds old, which is not worth saying;
+    # only mention age once it exceeds what the fetch floor alone explains.
+    if age is not None and age > 2 * MIN_FETCH_INTERVAL:
+        tooltip.append(f"Reading is {int(age // 60)}m old")
+
+    return {
+        "text": text,
+        "tooltip": "\n".join(tooltip),
+        "class": css_class,
+        "percentage": worst,
+    }
+
+
+def unavailable(reason: str) -> dict:
+    return {
+        "text": "?",
+        "tooltip": f"Claude usage unavailable\n{reason}",
+        "class": "unknown",
+        "percentage": 0,
+    }
+
+
+def refresh(cached: dict, now: float) -> tuple[dict, str | None]:
+    """Call the API unless the cache is fresh or a 429 backoff is still running.
+
+    Returns the cache to render from, and a note for the tooltip when the
+    numbers could not be brought up to date.
+    """
+    usage = cached.get("usage")
+    fresh = isinstance(usage, dict) and now - number(cached.get("fetched_at")) < MIN_FETCH_INTERVAL
+    if fresh:
+        return cached, None
+
+    blocked_for = number(cached.get("blocked_until")) - now
+    if blocked_for > 0:
+        return cached, f"Usage API rate limited it; retrying in {int(blocked_for)}s."
+
+    token = read_token()
+    if token is None:
+        return cached, "No valid Claude Code credentials — run `claude` to log in."
+
+    try:
+        return {"usage": fetch(token), "fetched_at": now}, None
+    except urllib.error.HTTPError as error:
+        if error.code == 429:
+            wait = retry_after(error.headers)
+            return (
+                {**cached, "blocked_until": now + wait},
+                f"Usage API rate limited it; retrying in {int(wait)}s.",
+            )
+        if error.code in (401, 403):
+            return cached, "Token rejected — run `claude` to refresh it."
+        return cached, f"HTTP {error.code} from the usage API."
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError) as error:
+        return cached, f"Could not reach the usage API ({type(error).__name__})."
+
+
+def main() -> None:
+    before = cache_load()
+    now = time.time()
+    cached, note = refresh(before, now)
+
+    if cached != before:
+        cache_store(cached)
+
+    usage = cached.get("usage")
+    if not isinstance(usage, dict):
+        result = unavailable(note or "No reading yet.")
+    else:
+        age = now - number(cached.get("fetched_at"))
+        result = render(usage, age if age >= 1 else None)
+        if note:
+            result["tooltip"] += f"\n{note}"
+
+    json.dump(result, sys.stdout)
+    sys.stdout.write("\n")
+
+
+if __name__ == "__main__":
+    main()

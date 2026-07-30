@@ -13,6 +13,7 @@
         "mpris"
     ],
     "modules-right": [
+        "custom/claude",
         "cpu",
         "memory",
         "custom/edit-config",
@@ -33,6 +34,19 @@
             "waybar-style": "nohup alacritty -e nvim $HOME/.config/waybar/style.css >/dev/null 2>&1 &",
             "niri-config":"nohup alacritty -e nvim $HOME/.config/niri/config.kdl>/dev/null 2>&1 &"  
         }
+    },
+
+    // Claude subscription limits: 5-hour session window / weekly window.
+    // Click to refresh now instead of waiting out the interval. Ticking this
+    // often is safe because the script, not this interval, decides how often
+    // the rate-limited usage API is actually called.
+    "custom/claude": {
+        "exec": "$HOME/.local/bin/waybar-claude-usage",
+        "return-type": "json",
+        "interval": 30,
+        "signal": 8,
+        "format": "<span font='13' rise='-1500'>✳</span> {}",
+        "on-click": "pkill -RTMIN+8 waybar"
     },
 
     "custom/firefox": {
