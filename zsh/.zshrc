@@ -23,6 +23,7 @@ alias ls="ls -hoag --color=auto"
 . "$HOME/.cargo/env"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="/opt/pycharm-eap/bin:$PATH"
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 export GPG_TTY=$(tty)
 bindkey -v
