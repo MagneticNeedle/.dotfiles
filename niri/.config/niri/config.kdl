@@ -181,6 +181,9 @@ binds {
     Mod+Shift+Space hotkey-overlay-title="Clipboard History: clipvault" {
         spawn "/home/magnetic-needle/.local/bin/clip-history"
     }
+    Mod+D hotkey-overlay-title="wayscriber" {
+        spawn "wayscriber" "--daemon-toggle"
+    }
     XF86AudioRaiseVolume allow-when-locked=true {
         spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"
     }
