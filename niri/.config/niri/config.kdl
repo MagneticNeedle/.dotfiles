@@ -98,7 +98,7 @@ layout {
 }
 spawn-at-startup "waybar"
 spawn-at-startup "xwayland-satellite"
-spawn-at-startup "easyeffects --gapplication-service"
+spawn-at-startup "easyeffects" "--gapplication-service"
 spawn-at-startup "blueman-applet"
 spawn-at-startup "wl-paste" "--watch" "clipvault" "store"
 
