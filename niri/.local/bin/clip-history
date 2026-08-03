@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+# Clipboard history picker: clipvault + rofi, with thumbnails for image entries.
+#
+# Adapted from the upstream example:
+#   https://github.com/Rolv-Apneseth/clipvault/blob/main/extras/clipvault_rofi.sh
+#
+# Two views, because a rofi theme applies to the entire process and so icon size
+# cannot vary between modes in one instance:
+#   all      every entry, compact rows, small thumbnails   (default)
+#   images   image entries only, large thumbnails          (clip-history images)
+# Tab switches between them by relaunching rofi with the other theme.
+#
+# Run with no arguments to open the picker. rofi then re-invokes this same file
+# as a custom mode, which is what the ROFI_RETV dispatch at the bottom handles.
+#
+# Keys:  Enter        copy the entry
+#        Up/Down      move through the list
+#        Tab          switch between the compact and gallery views
+#        Shift+Delete delete the entry, stay in the menu
+#        Alt+2        type the entry directly (needs wtype)
+
+set -uo pipefail
+
+self=$(realpath "$0")
+themes="$HOME/.config/rofi"
+thumbs="${XDG_CACHE_HOME:-$HOME/.cache}/clipvault/thumbs"
+
+# Which view to render. rofi passes this down to the mode script it spawns.
+view=${CLIP_VIEW:-${1:-all}}
+
+# Matches a `clipvault list` row for an image entry, capturing id, label and
+# extension. `[[]` is a literal "[" - gawk strips one level of backslashes from a
+# -v value, so a backslash-escaped bracket would reach the regex engine unescaped.
+image_row='^([0-9]+)\t([[][[] binary data.*(jpg|jpeg|png|bmp|webp|tif|gif).*)$'
+
+rofi_list() {
+	local list thumb id ext img
+	list=$(clipvault list)
+	mkdir -p "$thumbs"
+
+	# Drop thumbnails whose entry has since left the database.
+	while IFS= read -r thumb; do
+		id=$(basename "${thumb%.*}")
+		grep -q "^${id}	\[\[ binary data" <<<"$list" || rm -f "$thumb"
+	done < <(find "$thumbs" -type f)
+
+	# Generate any missing thumbnails. Upstream dumps the full-size image here;
+	# downscaling instead keeps rofi from decoding multi-hundred-kB screenshots
+	# every time the menu opens. Keep this comfortably above the gallery icon size
+	# in clip-gallery.rasi, or large rows upscale the cached copy and look soft.
+	# An empty file means a failed convert, so treat it as missing and retry
+	# rather than caching the failure forever.
+	while IFS=$'\t' read -r id ext; do
+		img="$thumbs/$id.$ext"
+		[[ -s $img ]] && continue
+		if command -v magick >/dev/null; then
+			clipvault get "$id" | magick - -thumbnail 512x512 "$img" || rm -f "$img"
+		else
+			clipvault get "$id" >"$img"
+		fi
+	done < <(gawk -v re="$image_row" 'match($0, re, g) { print g[1] "\t" g[3] }' <<<"$list")
+
+	# Emit rofi rows. The entry ID goes in the `info` field rather than in the
+	# visible text, so the list shows only the content itself.
+	gawk -v thumbs="$thumbs" -v re="$image_row" -v view="$view" '
+		# Browsers put an HTML <img> wrapper on the clipboard next to the real
+		# image entry; it is noise, so drop it.
+		/^[0-9]+\t<meta http-equiv=/ { next }
+
+		# Image entries keep the "[[ binary data ... ]]" label next to the
+		# thumbnail, which is what makes them reachable by the search filter. The
+		# gallery theme omits the text widget entirely, so those rows stay
+		# image-only there while still being searchable. Avoid apostrophes in
+		# here - this whole program is a single-quoted shell string.
+		match($0, re, g) {
+			print g[2] "\000icon\037" thumbs "/" g[1] "." g[3] "\037info\037" g[1]
+			next
+		}
+
+		# Everything else is text, which the gallery view leaves out.
+		view == "images" { next }
+
+		match($0, /^([0-9]+)\t(.*)$/, g) {
+			print g[2] "\000info\037" g[1]
+			next
+		}
+	' <<<"$list"
+}
+
+case "${ROFI_RETV-}" in
+# Not invoked by rofi, so this is the launcher: start rofi against ourselves.
+"")
+	if [[ $view == images ]]; then
+		theme=$themes/clip-gallery.rasi
+	else
+		theme=$themes/clip-dark.rasi
+	fi
+	export CLIP_VIEW=$view
+	# Tab drives the view switch. In rofi 2.0 that key belongs to kb-element-next
+	# (kb-row-tab is unbound by default), so it has to be cleared first or rofi
+	# refuses the duplicate binding. Arrow keys still move through the list.
+	exec rofi -show clip -modes "clip:$self" -show-icons -theme "$theme" \
+		-kb-element-next '' -kb-custom-3 'Tab'
+	;;
+# Initial list.
+0)
+	printf '\000use-hot-keys\037true\n' # enable the custom keys below
+	rofi_list
+	;;
+# kb-accept-entry (Enter)
+1)
+	[[ -n ${ROFI_INFO-} ]] && clipvault get "$ROFI_INFO" | wl-copy
+	;;
+# kb-delete-entry (Shift+Delete) - drop the entry, then redraw the list
+3)
+	[[ -n ${ROFI_INFO-} ]] && clipvault delete "$ROFI_INFO"
+	rofi_list
+	;;
+# kb-custom-2 (Alt+2) - type the entry instead of copying it
+11)
+	if [[ -z ${ROFI_INFO-} ]]; then
+		exit
+	elif command -v wtype >/dev/null; then
+		coproc { wtype "$(clipvault get "$ROFI_INFO")"; }
+	else
+		notify-send "Clipboard" "Alt+2 needs wtype: sudo pacman -S wtype"
+	fi
+	;;
+# kb-custom-3 (Tab) - switch views. Needs a fresh rofi for the other theme,
+# detached so it outlives this one; ROFI_* must be cleared or the new instance's
+# launcher branch would see a stale return value and never start.
+12)
+	[[ $view == images ]] && next=all || next=images
+	setsid -f env -u ROFI_RETV -u ROFI_INFO CLIP_VIEW="$next" "$self" >/dev/null 2>&1
+	;;
+*)
+	notify-send "Clipboard" "unhandled rofi return value $ROFI_RETV"
+	;;
+esac

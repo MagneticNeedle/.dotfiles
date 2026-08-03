@@ -1,0 +1,56 @@
+/* Gallery variant of the clipboard picker: image entries only, shown large.
+ *
+ * This has to be a separate theme rather than a second mode in the same rofi
+ * instance, because a rofi theme applies to the whole process - element-icon
+ * size cannot vary between modes. clip-history launches rofi afresh with this
+ * theme when the view is switched. */
+
+@import "clip-dark.rasi"
+
+/* A grid, not a list. One image per full-width row wastes most of the row, since
+ * the image is height-limited and cannot stretch sideways to fill it; columns
+ * put that horizontal space to use instead.
+ *
+ * flow and fixed-columns are both required: the default vertical flow fills
+ * column one top-to-bottom before starting column two, and rofi collapses unused
+ * columns unless told not to - either one alone leaves the images in a stack.
+ *
+ * lines is 1 because a grid reserves every one of its `lines` rows whether or
+ * not there are images to fill them, leaving a blank band under the images.
+ * Neither fixed-height: false nor dynamic: true collapses it - only a smaller
+ * lines does. Raising it to 2 doubles capacity to six at the cost of that blank
+ * row whenever three or fewer images are in the history. */
+listview {
+    columns:       3;
+    lines:         1;
+    flow:          horizontal;
+    fixed-columns: true;
+    spacing:       6px;
+}
+
+/* Wider than the compact view so the grid cells have room to be large. */
+window {
+    width: 60%;
+}
+
+/* Sized to fill a grid cell: at 60% of a 1920px screen a cell is roughly 375px
+ * wide, less padding, so this leaves a little slack. Rows are uniform height, so
+ * this is the row height too - the window grows to match. Raising it past the
+ * thumbnail size that clip-history caches (512px) upscales and looks soft. */
+element-icon {
+    size:             320px;
+    horizontal-align: 0.5;
+}
+
+/* Image rows carry clipvault's "[[ binary data ... ]]" label so the compact view
+ * can show and search it. Dropping element-text here hides that label without
+ * removing it from the row, so the grid stays purely visual and the entries are
+ * still reachable by typing. */
+element {
+    padding:  6px;
+    children: [ element-icon ];
+}
+
+entry {
+    placeholder: "Search images";
+}
