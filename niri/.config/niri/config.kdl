@@ -103,7 +103,7 @@ spawn-at-startup "blueman-applet"
 spawn-at-startup "linear-linux"
 spawn-at-startup "kdeconnect-indicator"
 spawn-at-startup "python3" "/home/bb/.config/niri/scripts/move-meet-popup.py"
-spawn-at-startup "wl-paste --watch clipvault store"
+spawn-at-startup "wl-paste" "--watch" "clipvault" "store"
 
 prefer-no-csd
 screenshot-path "~/Pictures/Screenshots/%Y-%m-%d %H-%M-%S.png"
