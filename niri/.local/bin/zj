@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+"""zj - launch (or re-attach to) a zellij dev session for a project."""
+import argparse
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+PROJECTS_DIR = Path(os.environ.get("PROJECTS_DIR", Path.home() / "Projects"))
+
+
+def resolve_dir(arg: str | None) -> Path:
+    if not arg:
+        return Path.cwd()
+    p = Path(arg)
+    if p.is_dir():
+        return p.resolve()
+    if (PROJECTS_DIR / arg).is_dir():
+        return PROJECTS_DIR / arg
+    sys.exit(f"zj: no such project '{arg}' (looked in $PWD and {PROJECTS_DIR})")
+
+
+def running_sessions() -> set[str]:
+    """Names of sessions with a live server, per their runtime socket.
+
+    Authoritative and cheap: the server creates a unix socket named after the
+    session and it disappears when the server dies. Preferred over scraping
+    `list-sessions`, whose EXITED tag is cosmetic and version-dependent.
+    """
+    runtime = os.environ.get("XDG_RUNTIME_DIR")
+    roots = [Path(runtime) / "zellij"] if runtime else []
+    roots.append(Path(f"/tmp/zellij-{os.getuid()}"))
+    # the socket sits under a contract-version dir that changes between releases
+    return {
+        sock.name
+        for root in roots
+        for sock in root.glob("*/*")
+        if sock.is_socket()
+    }
+
+
+def existing_sessions() -> tuple[set[str], set[str]]:
+    """Return (live, dead) session names known to zellij.
+
+    A dead-but-listed session is one zellij serialized and offers to resurrect.
+    The two must not be conflated: resurrecting rebuilds panes from a
+    *discovered* command line, and zellij discovers whatever process happened
+    to be in the foreground when the session died. If a pane's real command
+    (e.g. claude) exited leaving a stray child behind, that child is what gets
+    recorded -- and --force-run-commands then re-runs it with the pane's tty as
+    its stdin, so the pane comes up occupied by the wrong process and swallows
+    every keystroke.
+
+    Only lines carrying "[Created" are sessions, so "No active zellij sessions
+    found." is never mistaken for one.
+    """
+    try:
+        out = subprocess.run(
+            ["zellij", "list-sessions", "-n"],
+            capture_output=True, text=True,
+        ).stdout
+    except FileNotFoundError:
+        sys.exit("zj: zellij is not installed or not on PATH")
+
+    listed = {
+        line.split()[0]
+        for line in out.splitlines()
+        if "[Created" in line
+    }
+    live = listed & running_sessions()
+    return live, listed - live
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        prog="zj",
+        description="Launch (or re-attach to) a zellij dev session for a project.",
+    )
+    parser.add_argument(
+        "project",
+        nargs="?",
+        help="a dir under ~/Projects, an explicit path, or omitted (uses $PWD)",
+    )
+    parser.add_argument(
+        "-l", "--layout",
+        default=os.environ.get("ZJ_LAYOUT", "dev"),
+        help="zellij layout name to use (default: %(default)s). "
+             "Overridden by a project's own .zellij/layout.kdl if present.",
+    )
+    parser.add_argument(
+        "-r", "--resurrect",
+        action="store_true",
+        help="reuse a dead session's serialized tabs/panes instead of "
+             "discarding it and starting from the layout. Commands come up "
+             "suspended; press Enter in a pane to run it.",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    dir_ = resolve_dir(args.project)
+    session = re.sub(r"[^A-Za-z0-9_-]", "-", dir_.name)
+
+    live, dead = existing_sessions()
+
+    if session in live:
+        os.execvp("zellij", ["zellij", "attach", session])
+
+    if session in dead:
+        if args.resurrect:
+            # Deliberately no --force-run-commands: resurrected panes carry
+            # start_suspended, and leaving them suspended is the whole point --
+            # you get to see the command before it runs.
+            os.execvp("zellij", ["zellij", "attach", session])
+        # Drop the corpse so the name is free for a clean layout-driven start.
+        print(f"zj: discarding dead session {session!r} (-r to resurrect it)")
+        subprocess.run(["zellij", "delete-session", session], capture_output=True)
+
+    # Use --new-session-with-layout (not --layout): with --session set, --layout
+    # is interpreted as "add tabs to the session" rather than starting a new
+    # session with the layout. See zellij-org/zellij#3734.
+    local_layout = dir_ / ".zellij" / "layout.kdl"
+    layout = str(local_layout) if local_layout.is_file() else args.layout
+
+    os.chdir(dir_)
+    os.execvp(
+        "zellij",
+        ["zellij", "--session", session, "--new-session-with-layout", layout],
+    )
+
+
+if __name__ == "__main__":
+    main()
