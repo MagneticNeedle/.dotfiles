@@ -3,4 +3,4 @@
 # (e.g. the `zsh -lc "zj"` that raycast/scripts/zj.sh runs inside a fresh
 # Alacritty) find zj and uv in ~/.local/bin.
 eval "$(/opt/homebrew/bin/brew shellenv)"
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH
