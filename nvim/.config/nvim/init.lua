@@ -908,5 +908,9 @@ require('lazy').setup({
   },
 })
 
+-- Host-specific overrides (e.g. indent width) come from lua/host.lua,
+-- stowed by the machine's package under hosts/<name>/nvim.
+pcall(require, 'host')
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

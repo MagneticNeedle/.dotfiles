@@ -28,4 +28,7 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 export GPG_TTY=$(tty)
 bindkey -v
 bindkey '^R' history-incremental-pattern-search-backward
-bindkey '^S' history-incremental-pattern-search-forward 
+bindkey '^S' history-incremental-pattern-search-forward
+
+# Machine-local additions that don't belong in the shared config.
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"

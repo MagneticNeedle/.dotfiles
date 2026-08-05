@@ -8,9 +8,9 @@ __pycache__/
 .DS_Store
 *.bak
 
-# ~/.local/bin collects pipx/uv shims and real binaries (uv is 63M), none of
-# which belong in a dotfiles repo. Ignore the lot and add wanted scripts
-# explicitly with `git add -f`. Scripts owned by a specific package live in
-# that package instead, e.g. niri/.local/bin/zj.
-/local/.local/bin/*
-!/local/.local/bin/.gitkeep
+# Real binaries and shims that installers (uv, pipx) drop into a stowed
+# ~/.local/bin (uv alone is 63M). install.sh stows with --no-folding so this
+# shouldn't happen anymore, but keep them out of the repo regardless.
+**/.local/bin/uv
+**/.local/bin/uvx
+**/.local/bin/python3*

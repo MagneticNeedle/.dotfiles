@@ -1,0 +1,17 @@
+[general]
+import = ["~/.config/alacritty/base.toml"]
+
+[terminal]
+shell = { program = "/bin/zsh" }
+
+[font]
+normal = { family = "Iosevka Term", style = "Medium" }
+size = 18
+
+[window]
+opacity = 0.9
+startup_mode = "Maximized"
+
+[window.padding]
+x = 10
+y = 10

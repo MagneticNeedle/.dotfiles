@@ -1,0 +1,439 @@
+environment {
+    DISPLAY ":0"
+}
+
+input {
+    keyboard {
+        xkb {
+
+        }
+        numlock
+    }
+    touchpad {
+        off
+        tap
+        natural-scroll
+    }
+    mouse {
+        accel-profile "flat"
+    }
+    trackpoint {
+        off
+    }
+}
+
+cursor {
+	hide-when-typing
+	hide-after-inactive-ms 1000
+}
+
+clipboard {
+    disable-primary
+}
+
+overview {
+	zoom 0.5
+	backdrop-color "#000000"
+	workspace-shadow {
+		color "#6b6b6b"
+		spread 10
+		softness 50
+	}
+}
+
+output "DP-1" {
+    mode "1920x1080@165.003"
+
+}
+output "HDMI-A-1" {
+    mode "1920x1080@74.973"
+    transform "270"
+}
+
+
+layout {
+    gaps 10 
+
+    struts {
+        left 0
+        right 5
+        top -6
+        bottom -6
+    }
+    tab-indicator {
+        position "right"
+        active-color "#E3E319"
+        inactive-color "#356334"
+        width 2
+    }
+    background-color "#000000"
+    center-focused-column "never"
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+    default-column-width {
+        proportion 0.5
+    }
+    focus-ring {
+        width 2
+        active-gradient from="#E3E319" to="#3FAB05" angle=45
+        inactive-gradient from="#3FAB05" to="#E3E319" angle=45
+    }
+    border {
+        off
+        width 4
+        active-color "#ffc87f"
+        inactive-color "#505050"
+        urgent-color "#9b0000"
+    }
+
+    /-shadow {
+        softness 30
+        spread 5
+        offset x=0 y=5
+        color "#0007"
+    }
+}
+spawn-at-startup "waybar"
+spawn-at-startup "xwayland-satellite"
+spawn-at-startup "easyeffects" "--gapplication-service"
+spawn-at-startup "blueman-applet"
+spawn-at-startup "wl-paste" "--watch" "clipvault" "store"
+
+prefer-no-csd
+screenshot-path "~/Pictures/Screenshots/%Y-%m-%d %H-%M-%S.png"
+animations {
+    slowdown 0.5
+}
+hotkey-overlay {
+    skip-at-startup
+}
+
+workspace "browser" {
+    open-on-output "DP-1"
+}
+workspace "code" {
+    open-on-output "DP-1"
+}
+workspace "chat" {
+    open-on-output "DP-1"
+}
+
+
+window-rule {
+    match app-id="^org\\.wezfurlong\\.wezterm$"
+    default-column-width {
+
+    }
+}
+window-rule {
+    match app-id="^firefox-developer-edition$" title="^Picture-in-Picture$"
+    open-floating true
+}
+window-rule {
+    match app-id="^firefox-developer-edition$"
+    open-maximized true
+    open-on-workspace "browser"
+}
+window-rule {
+    match app-id="^vesktop$"
+    open-on-workspace "chat"
+    open-maximized true
+}
+window-rule {
+    match app-id="^jetbrains-pycharm$"
+    match app-id="^VSCodium$"
+    match app-id="^cursor$"
+
+    open-maximized true
+    open-on-workspace "code"
+}
+
+window-rule {
+    match app-id="bemenu"
+    open-floating true
+}
+
+/-window-rule {
+match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+match app-id=r#"^org\.gnome\.World\.Secrets$"#
+block-out-from "screen-capture"
+}
+window-rule {
+    geometry-corner-radius 5
+    clip-to-geometry true
+}
+binds {
+    Mod+Shift+Slash {
+        show-hotkey-overlay
+    }
+    Mod+Shift+Q hotkey-overlay-title="Open a Terminal: alacritty" {
+        spawn "alacritty"
+    }
+    Mod+Q {
+        spawn "sh" "-c" "alacritty --config-file=/home/magnetic-needle/.config/alacritty/alacritty_no_zellij.toml"
+    }
+    Mod+Space {
+        spawn "bemenu-run" "-H" "20" "-p" "" "--fn" "'Iosevka Term 12'" "--list" "5" "-b" "-i" "--single-instance"
+    }
+    Mod+Shift+Space hotkey-overlay-title="Clipboard History: clipvault" {
+        spawn "/home/magnetic-needle/.local/bin/clip-history"
+    }
+    Mod+D hotkey-overlay-title="wayscriber" {
+        spawn "wayscriber" "--daemon-toggle"
+    }
+    XF86AudioRaiseVolume allow-when-locked=true {
+        spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1+"
+    }
+    XF86AudioLowerVolume allow-when-locked=true {
+        spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.1-"
+    }
+    XF86AudioMute allow-when-locked=true {
+        spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"
+    }
+    XF86AudioMicMute allow-when-locked=true {
+        spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"
+    }
+    Mod+O repeat=false {
+        toggle-overview
+    }
+    Mod+Shift+C {
+        close-window
+    }
+    Mod+Left {
+        focus-column-left
+    }
+    Mod+Down {
+        focus-window-down
+    }
+    Mod+Up {
+        focus-window-up
+    }
+    Mod+Right {
+        focus-column-right
+    }
+    Mod+H {
+        focus-column-left
+    }
+    Mod+J {
+        focus-window-down
+    }
+    Mod+K {
+        focus-window-up
+    }
+    Mod+L {
+        focus-column-right
+    }
+    Mod+Ctrl+Left {
+        move-column-left
+    }
+    Mod+Ctrl+Up {
+        move-window-up
+    }
+    Mod+Ctrl+Right {
+        move-column-right
+    }
+    Mod+Ctrl+H {
+        move-column-left
+    }
+    Mod+Ctrl+J {
+        move-window-down
+    }
+    Mod+Ctrl+K {
+        move-window-up
+    }
+    Mod+Ctrl+L {
+        move-column-right
+    }
+    Mod+Home {
+        focus-column-first
+    }
+    Mod+End {
+        focus-column-last
+    }
+    Mod+Ctrl+Home {
+        move-column-to-first
+    }
+    Mod+Ctrl+End {
+        move-column-to-last
+    }
+    Mod+Shift+Left {
+        focus-monitor-left
+    }
+    Mod+Shift+Down {
+        focus-monitor-down
+    }
+    Mod+Shift+Up {
+        focus-monitor-up
+    }
+    Mod+Shift+Right {
+        focus-monitor-right
+    }
+    Mod+Shift+H {
+        focus-monitor-left
+    }
+    Mod+Shift+J {
+        focus-monitor-down
+    }
+    Mod+Shift+K {
+        focus-monitor-up
+    }
+    Mod+Shift+L {
+        focus-monitor-right
+    }
+    Mod+Shift+Ctrl+Left {
+        move-column-to-monitor-left
+    }
+    Mod+Shift+Ctrl+Down {
+        move-column-to-monitor-down
+    }
+    Mod+Shift+Ctrl+Up {
+        move-column-to-monitor-up
+    }
+    Mod+Shift+Ctrl+Right {
+        move-column-to-monitor-right
+    }
+    Mod+Shift+Ctrl+H {
+        move-column-to-monitor-left
+    }
+    Mod+Shift+Ctrl+J {
+        move-column-to-monitor-down
+    }
+    Mod+Shift+Ctrl+K {
+        move-column-to-monitor-up
+    }
+    Mod+Shift+Ctrl+L {
+        move-column-to-monitor-right
+    }
+    Mod+1 {
+        focus-workspace "browser"
+    }
+    Mod+2 {
+        focus-workspace "code"
+    }
+    Mod+3 {
+        focus-workspace "chat"
+    }
+    Mod+4 {
+        focus-workspace 4
+    }
+    Mod+5 {
+        focus-workspace 5
+    }
+    Mod+6 {
+        focus-workspace 6
+    }
+    Mod+7 {
+        focus-workspace 7
+    }
+    Mod+8 {
+        focus-workspace 8
+    }
+    Mod+9 {
+        focus-workspace 9
+    }
+    Mod+Ctrl+1 {
+        move-column-to-workspace "browser"
+    }
+    Mod+Ctrl+2 {
+        move-column-to-workspace "code"
+    }
+    Mod+Ctrl+3 {
+        move-column-to-workspace "chat"
+    }
+    Mod+Ctrl+4 {
+        move-column-to-workspace 4
+    }
+    Mod+Ctrl+5 {
+        move-column-to-workspace 5
+    }
+    Mod+Ctrl+6 {
+        move-column-to-workspace 6
+    }
+    Mod+Ctrl+7 {
+        move-column-to-workspace 7
+    }
+    Mod+Ctrl+8 {
+        move-column-to-workspace 8
+    }
+    Mod+Ctrl+9 {
+        move-column-to-workspace 9
+    }
+    Mod+Comma {
+        consume-or-expel-window-left
+    }
+    Mod+BracketRight {
+        consume-or-expel-window-right
+    }
+    Mod+Period {
+        expel-window-from-column
+    }
+    Mod+R {
+        switch-preset-column-width
+    }
+    Mod+Shift+R {
+        switch-preset-window-height
+    }
+    Mod+Ctrl+R {
+        reset-window-height
+    }
+    Mod+F {
+        maximize-column
+    }
+    Mod+Shift+F {
+        fullscreen-window
+    }
+    Mod+Ctrl+F {
+        expand-column-to-available-width
+    }
+    Mod+C {
+        center-column
+    }
+    Mod+Ctrl+C {
+        center-visible-columns
+    }
+    Mod+Minus {
+        set-column-width "-10%"
+    }
+    Mod+Equal {
+        set-column-width "+10%"
+    }
+    Mod+Shift+Minus {
+        set-window-height "-10%"
+    }
+    Mod+Shift+Equal {
+        set-window-height "+10%"
+    }
+    Mod+V {
+        toggle-window-floating
+    }
+    Mod+Shift+V {
+        switch-focus-between-floating-and-tiling
+    }
+    Mod+W {
+        toggle-column-tabbed-display
+    }
+    Print {
+	spawn "sh" "-c" "grim -g \"$(slurp)\" - | satty -f -"
+    }
+    Ctrl+Print {
+        screenshot-screen
+    }
+    Alt+Print {
+        screenshot-window
+    }
+    Mod+Escape allow-inhibiting=false {
+        toggle-keyboard-shortcuts-inhibit
+    }
+    Mod+Shift+E {
+        quit
+    }
+    Ctrl+Alt+Delete {
+        quit
+    }
+    Mod+Shift+P {
+        power-off-monitors
+    }
+}

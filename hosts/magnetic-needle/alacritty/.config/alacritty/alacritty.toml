@@ -1,0 +1,16 @@
+[general]
+import = ["~/.config/alacritty/base.toml"]
+
+[terminal]
+shell = { program = "/bin/zsh", args = ["-l", "-c", "zellij"] }
+
+[font]
+normal = { family = "Iosevka", style = "Thin,Regular" }
+size = 13.5
+
+[window]
+opacity = 1
+
+[window.padding]
+x = 1
+y = 1
