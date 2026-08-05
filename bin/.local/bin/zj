@@ -9,6 +9,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 PROJECTS_DIR = Path(os.environ.get("PROJECTS_DIR", Path.home() / "Projects"))
@@ -34,6 +35,10 @@ def running_sessions() -> set[str]:
     """
     runtime = os.environ.get("XDG_RUNTIME_DIR")
     roots = [Path(runtime) / "zellij"] if runtime else []
+    # zellij derives its socket dir from Rust's temp_dir(): $TMPDIR when set
+    # (always on macOS, /var/folders/...), /tmp otherwise. gettempdir() follows
+    # the same rules; keep /tmp too in case the server saw a different TMPDIR.
+    roots.append(Path(tempfile.gettempdir()) / f"zellij-{os.getuid()}")
     roots.append(Path(f"/tmp/zellij-{os.getuid()}"))
     # the socket sits under a contract-version dir that changes between releases
     return {
