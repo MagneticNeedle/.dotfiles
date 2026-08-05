@@ -14,3 +14,4 @@ __pycache__/
 **/.local/bin/uv
 **/.local/bin/uvx
 **/.local/bin/python3*
+/.claude
