@@ -2,7 +2,10 @@
 import = ["~/.config/alacritty/base.toml"]
 
 [terminal]
-shell = { program = "/bin/zsh" }
+# -l makes it a login shell so .zprofile runs; without it, an Alacritty
+# launched from Raycast/Finder inherits launchd's bare PATH and never
+# picks up brew or ~/.local/bin.
+shell = { program = "/bin/zsh", args = ["-l"] }
 
 [font]
 normal = { family = "Iosevka Term", style = "Medium" }
