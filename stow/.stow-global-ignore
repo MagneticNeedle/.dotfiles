@@ -1,0 +1,30 @@
+# Replaces stow's built-in ignore list (having this file disables the
+# defaults), so it restates the defaults and appends our own entries.
+# Patterns are Perl regexes matched against basenames (or full package
+# paths when they contain a slash).
+
+# --- stow's default list ---
+RCS
+.+,v
+
+CVS
+\.\#.+       # CVS conflict files / emacs lock files
+\.cvsignore
+
+\.svn
+_darcs
+\.hg
+
+\.git
+\.gitignore
+\.gitmodules
+
+.+~          # emacs backup files
+\#.*\#       # emacs autosave files
+
+^/README.*
+^/LICENSE.*
+^/COPYING
+
+# --- ours ---
+\.DS_Store   # Finder scatters these into browsed repo dirs

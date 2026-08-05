@@ -38,6 +38,12 @@ fi
   exit 1
 }
 
+# The stow package ships ~/.stow-global-ignore (e.g. so Finder's .DS_Store
+# droppings never conflict). Stow it on its own first: later invocations in
+# this run already honor it, including the first ever run on a new machine.
+# shellcheck disable=SC2086
+stow $sim --no-folding --restow --target "$HOME" stow
+
 # shellcheck disable=SC2046,SC2086
 stow $sim --no-folding --restow --target "$HOME" $(grep -v '^#' "hosts/$host/packages")
 
