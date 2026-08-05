@@ -47,6 +47,7 @@ Put it in a shared package and list that package in each host's
 ```sh
 mkdir -p foo/.config/foo
 mv ~/.config/foo/config.toml foo/.config/foo/
+echo foo >> hosts/bb-mac/packages    # repeat for each host that wants it
 ./install.sh -n          # preview
 ./install.sh             # replaces the real file with a symlink
 ```
