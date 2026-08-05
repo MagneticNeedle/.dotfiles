@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Symlink this repo's config packages into $HOME with GNU stow.
 #
-# Usage: ./install.sh [host]    (host = a directory name under hosts/)
-# With no argument the host is guessed from the machine.
+# Usage: ./install.sh [-n] [host]    (host = a directory name under hosts/)
+# With no host argument the host is guessed from the machine.
+# -n simulates: prints what stow would change without touching anything.
 #
 # Each host gets the shared packages listed in hosts/<host>/packages, plus
 # every package directory under hosts/<host>/ itself (host-specific files
@@ -14,8 +15,16 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+sim=""
+host=""
+for arg in "$@"; do
+  case "$arg" in
+    -n|--simulate) sim="--simulate --verbose" ;;
+    *) host="$arg" ;;
+  esac
+done
+
 # Hosts are named <user>-<os>, e.g. bb-mac, magnetic-needle-linux.
-host="${1:-}"
 if [[ -z "$host" ]]; then
   case "$(uname -s)" in
     Darwin) os=mac ;;
@@ -29,12 +38,17 @@ fi
   exit 1
 }
 
-# shellcheck disable=SC2046
-stow --no-folding --restow --target "$HOME" $(grep -v '^#' "hosts/$host/packages")
+# shellcheck disable=SC2046,SC2086
+stow $sim --no-folding --restow --target "$HOME" $(grep -v '^#' "hosts/$host/packages")
 
 for dir in "hosts/$host"/*/; do
   [[ -d "$dir" ]] || continue
-  stow --no-folding --restow --dir "hosts/$host" --target "$HOME" "$(basename "$dir")"
+  # shellcheck disable=SC2086
+  stow $sim --no-folding --restow --dir "hosts/$host" --target "$HOME" "$(basename "$dir")"
 done
 
-echo "stowed for host: $host"
+if [[ -n "$sim" ]]; then
+  echo "simulated for host: $host (nothing changed)"
+else
+  echo "stowed for host: $host"
+fi

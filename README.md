@@ -10,6 +10,7 @@ package that mirrors `$HOME`; everything machine-specific lives under
 ```sh
 git clone git@github.com:MagneticNeedle/.dotfiles.git ~/dotfiles
 cd ~/dotfiles
+./install.sh -n         # dry run: show what would change
 ./install.sh            # guesses the host; or ./install.sh <host>
 ```
 
@@ -46,6 +47,7 @@ Put it in a shared package and list that package in each host's
 ```sh
 mkdir -p foo/.config/foo
 mv ~/.config/foo/config.toml foo/.config/foo/
+./install.sh -n          # preview
 ./install.sh             # replaces the real file with a symlink
 ```
 
