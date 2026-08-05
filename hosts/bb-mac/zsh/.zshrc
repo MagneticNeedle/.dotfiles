@@ -45,3 +45,9 @@ brew() { sudo -Hu magnetic-needle /opt/homebrew/bin/brew "$@"; }
 # export ARCHFLAGS="-arch $(uname -m)"
 alias ls="ls -A --color=auto"
 alias ll="ls -lA --color=auto"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/bb/softwares/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/bb/softwares/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/bb/softwares/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/bb/softwares/google-cloud-sdk/completion.zsh.inc'; fi
