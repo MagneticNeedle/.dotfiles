@@ -44,3 +44,5 @@ brew() { sudo -Hu magnetic-needle /opt/homebrew/bin/brew "$@"; }
 
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
+alias ls="ls -A --color=auto"
+alias ll="ls -lA --color=auto"
