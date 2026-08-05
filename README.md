@@ -25,14 +25,16 @@ into this repo.
 
 ## Hosts
 
-| host              | machine                  | notes                        |
-|-------------------|--------------------------|------------------------------|
-| `magnetic-needle` | Linux desktop            | niri, waybar, full setup     |
-| `bb-linux`        | Linux, user `bb`         | 4-space nvim indent, vert monitor |
-| `mac`             | MacBook, user `bb`       | no niri/waybar; own zshrc    |
+Hosts are named `<user>-<os>`:
 
-The host is guessed in `install.sh` from `uname` + username; pass the name
-explicitly if the guess is wrong, and teach it the new machine.
+| host                    | machine                  | notes                        |
+|-------------------------|--------------------------|------------------------------|
+| `magnetic-needle-linux` | Linux desktop            | niri, waybar, full setup     |
+| `bb-linux`              | Linux, user `bb`         | 4-space nvim indent, vert monitor |
+| `bb-mac`                | MacBook, user `bb`       | no niri/waybar; own zshrc    |
+
+`install.sh` guesses the host as `$(id -un)-<mac|linux>`; pass the name
+explicitly to override.
 
 ## How to track things
 
@@ -51,7 +53,7 @@ mv ~/.config/foo/config.toml foo/.config/foo/
 
 Nothing special — a package is only stowed where it's listed. Linux-only
 packages (`niri`, `waybar`, `mako`, `rofi`, `satty`, `systemd`, `openrgb`)
-are simply absent from `hosts/mac/packages`. A future mac-only package
+are simply absent from `hosts/bb-mac/packages`. A future mac-only package
 (e.g. `aerospace`, `karabiner`) would be listed only there.
 
 ### A config that exists everywhere but differs per machine
@@ -75,13 +77,13 @@ Pick one, in order of preference:
    niri's `config.kdl` (outputs, workspaces, absolute home paths) lives in
    `hosts/<name>/niri/.config/niri/config.kdl`; the shared `niri` package
    keeps only what's identical (scripts, bin). Same idea for the mac's
-   oh-my-zsh `.zshrc` at `hosts/mac/zsh/.zshrc` — the mac doesn't stow the
+   oh-my-zsh `.zshrc` at `hosts/bb-mac/zsh/.zshrc` — the mac doesn't stow the
    shared `zsh` package at all.
 
 Host packages layer cleanly on top of shared ones because of
 `--no-folding`: both can contribute files to the same directory, e.g.
 `~/.local/bin/zj` comes from the shared `bin` package while
-`~/.local/bin/zj.sh` (Raycast launcher) comes from `hosts/mac/bin`.
+`~/.local/bin/zj.sh` (Raycast launcher) comes from `hosts/bb-mac/bin`.
 
 ### OS differences inside a shared file
 
@@ -101,13 +103,13 @@ Fork into a host package only when the file would become mostly branches.
 
 ## Adding a machine
 
-1. `mkdir hosts/<name>` and write its `packages` list (start by copying
-   the closest existing host's).
+1. `mkdir hosts/<user>-<os>` (e.g. `magnetic-needle-mac`) and write its
+   `packages` list (start by copying the closest existing host's).
 2. Add host-specific packages under `hosts/<name>/` as needed (at minimum
    `alacritty/` if it runs alacritty).
-3. Add a guess for it in `install.sh`, or always run
-   `./install.sh <name>`.
-4. Run `./install.sh` on the machine. If stow complains about existing
+3. Run `./install.sh` on the machine — the host name is derived from the
+   username and OS, so a correctly named directory is found automatically.
+4. If stow complains about existing
    files, they're the machine's old real configs — move them into the
    repo (shared or host package) and rerun.
 

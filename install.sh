@@ -14,14 +14,15 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
+# Hosts are named <user>-<os>, e.g. bb-mac, magnetic-needle-linux.
 host="${1:-}"
 if [[ -z "$host" ]]; then
-  case "$(uname -s):$(id -un)" in
-    Darwin:*)              host=mac ;;
-    Linux:magnetic-needle) host=magnetic-needle ;;
-    Linux:bb)              host=bb-linux ;;
+  case "$(uname -s)" in
+    Darwin) os=mac ;;
+    Linux)  os=linux ;;
     *) echo "cannot guess host; usage: $0 <host>" >&2; exit 1 ;;
   esac
+  host="$(id -un)-$os"
 fi
 [[ -f "hosts/$host/packages" ]] || {
   echo "unknown host '$host' (no hosts/$host/packages)" >&2
