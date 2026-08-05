@@ -2,37 +2,122 @@
 Did I ever tell you the definition of insanity?
 
 One branch (`main`), many machines. Each top-level directory is a GNU stow
-package mirroring `$HOME`; machine differences live under `hosts/`.
+package that mirrors `$HOME`; everything machine-specific lives under
+`hosts/`. No per-machine branches — every machine pulls `main`.
 
 ## Setup on a machine
 
 ```sh
-git clone <this repo> ~/dotfiles
+git clone git@github.com:MagneticNeedle/.dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./install.sh            # guesses the host; or ./install.sh <host>
 ```
 
-## Layout
+`install.sh` stows two layers into `$HOME`:
 
-- `alacritty/`, `zsh/`, `nvim/`, `niri/`, ... — shared stow packages.
-- `hosts/<name>/packages` — which shared packages that machine stows.
-- `hosts/<name>/<package>/` — host-specific stow packages layered on top,
-  for files that genuinely differ per machine:
-  - `alacritty.toml` is per-host (font, size, shell); it imports the shared
-    `base.toml` from the alacritty package.
-  - niri's `config.kdl` is per-host (outputs, workspaces, home paths).
-  - nvim reads an optional `lua/host.lua` for per-host overrides.
-  - the shared `zsh/.zshrc` sources `~/.zshrc.local` if present; the mac
-    tracks its own `.zshrc` instead.
+1. the shared packages listed in `hosts/<host>/packages`
+2. every package directory under `hosts/<host>/` (host-specific files)
 
-Hosts: `magnetic-needle` (Linux desktop), `bb-linux` (Linux, user bb),
-`mac` (MacBook, user bb).
+It always stows with `--no-folding`, so directories like `~/.local/bin`
+stay real directories and only individual files become symlinks. That way
+installers (uv, pipx, cargo) write their binaries onto the machine, not
+into this repo.
+
+## Hosts
+
+| host              | machine                  | notes                        |
+|-------------------|--------------------------|------------------------------|
+| `magnetic-needle` | Linux desktop            | niri, waybar, full setup     |
+| `bb-linux`        | Linux, user `bb`         | 4-space nvim indent, vert monitor |
+| `mac`             | MacBook, user `bb`       | no niri/waybar; own zshrc    |
+
+The host is guessed in `install.sh` from `uname` + username; pass the name
+explicitly if the guess is wrong, and teach it the new machine.
+
+## How to track things
+
+### A config every machine shares
+
+Put it in a shared package and list that package in each host's
+`packages` file. Example: `lazygit/.config/lazygit/config.yml`.
+
+```sh
+mkdir -p foo/.config/foo
+mv ~/.config/foo/config.toml foo/.config/foo/
+./install.sh             # replaces the real file with a symlink
+```
+
+### A config only some OSes / machines use
+
+Nothing special — a package is only stowed where it's listed. Linux-only
+packages (`niri`, `waybar`, `mako`, `rofi`, `satty`, `systemd`, `openrgb`)
+are simply absent from `hosts/mac/packages`. A future mac-only package
+(e.g. `aerospace`, `karabiner`) would be listed only there.
+
+### A config that exists everywhere but differs per machine
+
+Pick one, in order of preference:
+
+1. **The tool has an include mechanism — use it.** Keep the shared part in
+   the shared package and the differing part in a host package:
+   - *alacritty*: each host owns `alacritty.toml` (font, size, shell,
+     window) and imports the shared `base.toml` from the alacritty
+     package. The importing file wins on conflicts.
+   - *nvim*: shared `init.lua` ends with `pcall(require, 'host')`; a host
+     package may provide `.config/nvim/lua/host.lua` (see `bb-linux`,
+     which sets 4-space indent there).
+   - *zsh*: the shared `.zshrc` sources `~/.zshrc.local` if it exists —
+     put machine-only PATH entries and hacks in a host package as
+     `zsh-local/.zshrc.local`, or leave it untracked on the machine.
+   - *git*, if ever needed: `[include] path = ~/.gitconfig.local`.
+
+2. **The file is irreconcilably different — give each host its own.**
+   niri's `config.kdl` (outputs, workspaces, absolute home paths) lives in
+   `hosts/<name>/niri/.config/niri/config.kdl`; the shared `niri` package
+   keeps only what's identical (scripts, bin). Same idea for the mac's
+   oh-my-zsh `.zshrc` at `hosts/mac/zsh/.zshrc` — the mac doesn't stow the
+   shared `zsh` package at all.
+
+Host packages layer cleanly on top of shared ones because of
+`--no-folding`: both can contribute files to the same directory, e.g.
+`~/.local/bin/zj` comes from the shared `bin` package while
+`~/.local/bin/zj.sh` (Raycast launcher) comes from `hosts/mac/bin`.
+
+### OS differences inside a shared file
+
+Prefer runtime detection over forking the file:
+
+```sh
+# zsh
+[[ "$OSTYPE" == darwin* ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+```lua
+-- nvim
+if vim.fn.has('mac') == 1 then ... end
+```
+
+Fork into a host package only when the file would become mostly branches.
 
 ## Adding a machine
 
-1. `mkdir hosts/<name>` and write a `packages` list.
-2. Add host-specific packages next to it as needed.
-3. Teach the guess in `install.sh` (or always pass the name explicitly).
+1. `mkdir hosts/<name>` and write its `packages` list (start by copying
+   the closest existing host's).
+2. Add host-specific packages under `hosts/<name>/` as needed (at minimum
+   `alacritty/` if it runs alacritty).
+3. Add a guess for it in `install.sh`, or always run
+   `./install.sh <name>`.
+4. Run `./install.sh` on the machine. If stow complains about existing
+   files, they're the machine's old real configs — move them into the
+   repo (shared or host package) and rerun.
 
-`install.sh` stows with `--no-folding` so `~/.local/bin` and friends stay
-real directories — installers like uv won't write binaries into this repo.
+## Gotchas
+
+- Never let an installer target a stowed bin dir symlink; `--no-folding`
+  prevents the classic failure where `uv`'s 63M binary lands in the repo.
+  The `.gitignore` also blocks `uv`/`uvx`/`python3*` under any
+  `.local/bin` as a backstop.
+- `keeb/latest.vil` is not a stow package — it's the Vial keyboard layout,
+  loaded manually.
+- After changing files here, `./install.sh` is idempotent (`--restow`);
+  rerun it whenever files are added or moved.
