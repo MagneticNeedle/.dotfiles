@@ -84,9 +84,16 @@ Pick one, in order of preference:
    shared `zsh` package at all.
 
 Host packages layer cleanly on top of shared ones because of
-`--no-folding`: both can contribute files to the same directory, e.g.
-`~/.local/bin/zj` comes from the shared `bin` package while
-`~/.local/bin/zj.sh` (Raycast launcher) comes from `hosts/bb-mac/bin`.
+`--no-folding`: both can contribute files to the same directory, e.g. a host
+package can drop extra scripts into `~/.local/bin` next to the shared `bin`
+package's `zj`.
+
+### Configs a tool must read in place (not stowed)
+
+`raycast/` is not a stow package: Raycast doesn't index script commands that
+are symlinks, so its scripts can't be stowed into `$HOME`. Instead, point
+Raycast at the repo directory itself — Settings → Extensions → Script
+Commands → Add Directories → `~/dotfiles/raycast/scripts`.
 
 ### OS differences inside a shared file
 
