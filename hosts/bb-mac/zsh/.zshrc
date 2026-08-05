@@ -1,5 +1,4 @@
-eval "$(/opt/homebrew/bin/brew shellenv)"
-export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+# PATH and brew env are set in .zprofile (login shells), not here.
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
