@@ -100,6 +100,9 @@ spawn-at-startup "waybar"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "easyeffects" "--gapplication-service"
 spawn-at-startup "blueman-applet"
+spawn-at-startup "linear-linux"
+spawn-at-startup "kdeconnect-indicator"
+spawn-at-startup "python3" "/home/bb/.config/niri/scripts/move-meet-popup.py"
 spawn-at-startup "wl-paste" "--watch" "clipvault" "store"
 
 prefer-no-csd
@@ -120,6 +123,9 @@ workspace "code" {
 workspace "chat" {
     open-on-output "DP-1"
 }
+workspace "vert" {
+    open-on-output "HDMI-A-1"
+}
 
 
 window-rule {
@@ -132,8 +138,19 @@ window-rule {
     match app-id="^firefox-developer-edition$" title="^Picture-in-Picture$"
     open-floating true
 }
+// The Meet pop-out is moved to HDMI-A-1 by scripts/move-meet-popup.py:
+// niri decides a window's output at map time, but Chrome renames the pop-out
+// to "Meet - ..." only after mapping, so open-on-output can't catch it here.
+window-rule {
+    match app-id="^google-chrome$" title="^Meet - "
+    exclude title=" - Google Chrome$"
+    open-floating true
+    open-focused false
+}
+
 window-rule {
     match app-id="^firefox-developer-edition$"
+    match app-id="^google-chrome$"
     open-maximized true
     open-on-workspace "browser"
 }
@@ -151,6 +168,12 @@ window-rule {
     open-on-workspace "code"
 }
 
+window-rule {
+    match app-id="^slack$"
+    match app-id="^linear-linux$"
+    open-on-workspace "vert"
+    open-maximized true
+}
 window-rule {
     match app-id="bemenu"
     open-floating true
@@ -173,13 +196,13 @@ binds {
         spawn "alacritty"
     }
     Mod+Q {
-        spawn "sh" "-c" "alacritty --config-file=/home/magnetic-needle/.config/alacritty/alacritty_no_zellij.toml"
+        spawn "sh" "-c" "alacritty --config-file=/home/bb/.config/alacritty/alacritty_no_zellij.toml"
     }
     Mod+Space {
         spawn "bemenu-run" "-H" "20" "-p" "" "--fn" "'Iosevka Term 12'" "--list" "5" "-b" "-i" "--single-instance"
     }
     Mod+Shift+Space hotkey-overlay-title="Clipboard History: clipvault" {
-        spawn "/home/magnetic-needle/.local/bin/clip-history"
+        spawn "/home/bb/.local/bin/clip-history"
     }
     Mod+D hotkey-overlay-title="wayscriber" {
         spawn "wayscriber" "--daemon-toggle"
