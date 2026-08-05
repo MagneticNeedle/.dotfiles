@@ -9,12 +9,16 @@ shell = { program = "/bin/zsh", args = ["-l"] }
 
 [font]
 normal = { family = "Iosevka Term", style = "Medium" }
-size = 18
+size = 20 
 
 [window]
-opacity = 0.9
+opacity = 0.96
 startup_mode = "Maximized"
+decorations="None"
 
 [window.padding]
 x = 10
 y = 10
+
+
+
