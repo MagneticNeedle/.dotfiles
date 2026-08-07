@@ -58,3 +58,14 @@ if [[ -n "$sim" ]]; then
 else
   echo "stowed for host: $host"
 fi
+
+# Whatever a host needs beyond symlinks. It runs from the repo root and prints
+# the steps that are still yours to do, so it goes last, after the stow summary.
+if [[ -x "hosts/$host/post-install" ]]; then
+  if [[ -n "$sim" ]]; then
+    echo "would run hosts/$host/post-install"
+  else
+    echo
+    "./hosts/$host/post-install"
+  fi
+fi
