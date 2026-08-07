@@ -47,19 +47,19 @@ automatically-unhide-macos-hidden-apps = false
 # even when they are invisible.
 # This config option is only available since 'config-version = 2'
 # Fallback value (if you omit the key): persistent-workspaces = []
-persistent-workspaces = ["Browser", "Code", "Chat", "ScratchPad" ]
+persistent-workspaces = ["1.Browser", "2.Code", "3.Chat", "4.ScratchPad" ]
 
 on-window-detected = [
     {
         if = 'test %{app-bundle-id} = com.tinyspeck.slackmacgap || test %{app-bundle-id} = com.linear',
-        run = 'move-node-to-workspace Chat',
+        run = 'move-node-to-workspace 3.Chat',
     },
     {
         if = 'test %{app-bundle-id} = org.mozilla.firefox',
-        run = 'move-node-to-workspace Browser',
+        run = 'move-node-to-workspace 1.Browser',
     },
     {
-        if = 'test %{workspace} = Code',
+        if = 'test %{workspace} = 2.Code',
         run = 'layout h_accordion',
     },
 ]
@@ -141,16 +141,16 @@ gaps.outer.right =      0
     alt-equal = 'resize smart +50'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
-    alt-1 = 'workspace Browser'
-    alt-2 = 'workspace Code'
-    alt-3 = 'workspace Chat'
-    alt-4 = 'workspace ScratchPad' 
+    alt-1 = 'workspace 1.Browser'
+    alt-2 = 'workspace 2.Code'
+    alt-3 = 'workspace 3.Chat'
+    alt-4 = 'workspace 4.ScratchPad'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-    alt-shift-1 = 'move-node-to-workspace Browser'
-    alt-shift-2 = 'move-node-to-workspace Code'
-    alt-shift-3 = 'move-node-to-workspace Chat'
-    alt-shift-4 = 'move-node-to-workspace ScratchPad'
+    alt-shift-1 = 'move-node-to-workspace 1.Browser'
+    alt-shift-2 = 'move-node-to-workspace 2.Code'
+    alt-shift-3 = 'move-node-to-workspace 3.Chat'
+    alt-shift-4 = 'move-node-to-workspace 4.ScratchPad'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     alt-tab = 'workspace-back-and-forth'
