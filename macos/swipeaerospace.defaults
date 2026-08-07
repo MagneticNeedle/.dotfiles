@@ -1,0 +1,20 @@
+# SwipeAeroSpace (github.com/MediosZ/SwipeAeroSpace) settings.
+#
+# The app has no config file; it stores everything in macOS UserDefaults under
+# club.mediosz.SwipeAeroSpace. Apply these with ./macos/swipeaerospace.sh apply,
+# and refresh this file from the live app with `export` after tweaking its
+# Settings window.
+#
+# Format: <key> <value>. Types are fixed by the app and live in the script.
+# Note `natrual` is misspelled in SwipeAeroSpace itself, not here.
+
+threshold             3
+fingers               Three
+natrual               true
+wrap                  false
+skip-empty            false
+multiSwipe            false
+maxSteps              5
+swipeUpOverview       true
+swipeUpFingers        Three
+show-empty-workspaces true
