@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/../.."
+
+cat <<'EOF'
+Still to do by hand:
+
+  ./macos/swipeaerospace.sh apply
+      Quit SwipeAeroSpace first -- a running instance writes its own values
+      back over yours. Restart it afterwards.
+EOF
