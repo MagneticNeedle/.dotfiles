@@ -15,6 +15,6 @@ wrap                  false
 skip-empty            false
 multiSwipe            false
 maxSteps              5
-swipeUpOverview       true
+swipeUpOverview       false
 swipeUpFingers        Three
 show-empty-workspaces true
