@@ -16,7 +16,7 @@ cd ~/dotfiles
 
 `install.sh` stows two layers into `$HOME`:
 
-1. the shared packages listed in `hosts/<host>/packages`
+1. the shared packages listed in `hosts/<host>/shared`
 2. every package directory under `hosts/<host>/` (host-specific files)
 
 It always stows with `--no-folding`, so directories like `~/.local/bin`
@@ -42,12 +42,12 @@ explicitly to override.
 ### A config every machine shares
 
 Put it in a shared package and list that package in each host's
-`packages` file. Example: `lazygit/.config/lazygit/config.yml`.
+`shared` file. Example: `lazygit/.config/lazygit/config.yml`.
 
 ```sh
 mkdir -p foo/.config/foo
 mv ~/.config/foo/config.toml foo/.config/foo/
-echo foo >> hosts/bb-mac/packages    # repeat for each host that wants it
+echo foo >> hosts/bb-mac/shared      # repeat for each host that wants it
 ./install.sh -n          # preview
 ./install.sh             # replaces the real file with a symlink
 ```
@@ -56,7 +56,7 @@ echo foo >> hosts/bb-mac/packages    # repeat for each host that wants it
 
 Nothing special — a package is only stowed where it's listed. Linux-only
 packages (`niri`, `waybar`, `mako`, `rofi`, `satty`, `systemd`, `openrgb`)
-are simply absent from `hosts/bb-mac/packages`. A future mac-only package
+are simply absent from `hosts/bb-mac/shared`. A future mac-only package
 (e.g. `aerospace`, `karabiner`) would be listed only there.
 
 ### A config that exists everywhere but differs per machine
@@ -118,7 +118,7 @@ Fork into a host package only when the file would become mostly branches.
 ## Adding a machine
 
 1. `mkdir hosts/<user>-<os>` (e.g. `magnetic-needle-mac`) and write its
-   `packages` list (start by copying the closest existing host's).
+   `shared` list (start by copying the closest existing host's).
 2. Add host-specific packages under `hosts/<name>/` as needed (at minimum
    `alacritty/` if it runs alacritty).
 3. Run `./install.sh` on the machine — the host name is derived from the

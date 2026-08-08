@@ -5,7 +5,7 @@
 # With no host argument the host is guessed from the machine.
 # -n simulates: prints what stow would change without touching anything.
 #
-# Each host gets the shared packages listed in hosts/<host>/packages, plus
+# Each host gets the shared packages listed in hosts/<host>/shared, plus
 # every package directory under hosts/<host>/ itself (host-specific files
 # such as alacritty.toml or niri's config.kdl).
 #
@@ -33,8 +33,8 @@ if [[ -z "$host" ]]; then
   esac
   host="$(id -un)-$os"
 fi
-[[ -f "hosts/$host/packages" ]] || {
-  echo "unknown host '$host' (no hosts/$host/packages)" >&2
+[[ -f "hosts/$host/shared" ]] || {
+  echo "unknown host '$host' (no hosts/$host/shared)" >&2
   exit 1
 }
 
@@ -45,7 +45,7 @@ fi
 stow $sim --no-folding --restow --target "$HOME" stow
 
 # shellcheck disable=SC2046,SC2086
-stow $sim --no-folding --restow --target "$HOME" $(grep -v '^#' "hosts/$host/packages")
+stow $sim --no-folding --restow --target "$HOME" $(grep -v '^#' "hosts/$host/shared")
 
 for dir in "hosts/$host"/*/; do
   [[ -d "$dir" ]] || continue
