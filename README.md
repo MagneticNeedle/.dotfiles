@@ -74,6 +74,10 @@ Pick one, in order of preference:
    - *zsh*: the shared `.zshrc` sources `~/.zshrc.local` if it exists —
      put machine-only PATH entries and hacks in a host package as
      `zsh-local/.zshrc.local`, or leave it untracked on the machine.
+   - *zellij*: layouts have no include mechanism, so the shared `dev.kdl`
+     runs `ai` — a shim in the `bin` package that execs `$AI_CLI`
+     (default `pi`). A host picks its CLI by exporting `AI_CLI` in its
+     `.zshrc` (see `bb-mac`, which sets `claude`).
    - *git*, if ever needed: `[include] path = ~/.gitconfig.local`.
 
 2. **The file is irreconcilably different — give each host its own.**

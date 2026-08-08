@@ -32,6 +32,7 @@ plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
 export LANG=en_US.UTF-8
+export AI_CLI=claude
 brew() { sudo -Hu magnetic-needle /opt/homebrew/bin/brew "$@"; }
 
 # Preferred editor for local and remote sessions

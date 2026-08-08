@@ -1,4 +1,4 @@
-// Generic dev layout: claude / run / git
+// Generic dev layout: ai / run / git
 // Panes inherit the cwd from wherever `zellij` is launched (the `zj` script cd's
 // into the project first), so this layout is reusable across projects.
 layout {
@@ -10,8 +10,9 @@ layout {
         }
     }
 
-    tab name="claude" focus=true {
-        pane command="claude"
+    tab name="ai" focus=true {
+        // `ai` is a shim in the bin package; each host picks the CLI via $AI_CLI
+        pane command="ai"
     }
 
     tab name="run" {
