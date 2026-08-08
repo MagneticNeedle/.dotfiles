@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# The AI CLI this machine uses. Exists so the shared zellij layout can name one
+# command on every host; a host overrides it by exporting AI_CLI in its .zshrc.
+exec "${AI_CLI:-pi}" "$@"
