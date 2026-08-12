@@ -1,6 +1,14 @@
 config-version = 2
 
-after-startup-command = []
+after-startup-command = [
+    'exec-and-forget open -b com.github.th-ch.youtube-music',
+
+    # Focus indicator: aerospace draws nothing itself. Configured in
+    # ~/.config/borders/bordersrc (the `borders` stow package), which this
+    # picks up because no arguments are passed. Absolute path -- launchd
+    # hands aerospace a PATH without brew in it.
+    'exec-and-forget /opt/homebrew/bin/borders',
+]
 
 start-at-login = true 
 
@@ -9,11 +17,11 @@ auto-reload-config = true
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 
-accordion-padding = 0
+accordion-padding = 50
 
-default-root-container-layout = 'tiles'
+default-root-container-layout = 'accordion'
 
-default-root-container-orientation = 'auto'
+default-root-container-orientation = 'horizontal'
 
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
@@ -34,17 +42,12 @@ on-window-detected = [
 
     {
         if = 'test %{app-bundle-id} = com.tinyspeck.slackmacgap',
-        run = ['move-node-to-workspace 4.Chat', 'layout v_accordion'],
+        run = 'move-node-to-workspace 4.Chat',
     },
 
     {
         if = 'test %{app-bundle-id} = com.github.th-ch.youtube-music',
         run = 'move-node-to-workspace 6.Media',
-    },
-
-    {
-        if = 'test %{workspace} = 2.Code || test %{workspace} = 4.Chat',
-        run = 'layout v_accordion',
     },
 ]
 
@@ -54,12 +57,12 @@ focus-follows-mouse.enabled = false
 
 key-mapping.preset = 'qwerty'
 
-gaps.inner.horizontal = 0
-gaps.inner.vertical =   0
-gaps.outer.left =       0
-gaps.outer.bottom =     0
-gaps.outer.top =        0
-gaps.outer.right =      0
+gaps.inner.horizontal = 10
+gaps.inner.vertical =   10
+gaps.outer.left =       10
+gaps.outer.bottom =     5
+gaps.outer.top =        5
+gaps.outer.right =      10
 
 [mode.main.binding]
     alt-slash = 'layout tiles horizontal vertical'
