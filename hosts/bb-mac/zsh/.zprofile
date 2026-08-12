@@ -4,3 +4,4 @@
 # Alacritty) find zj and uv in ~/.local/bin.
 eval "$(/opt/homebrew/bin/brew shellenv)"
 export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH
+export AI_CLI="claude"
