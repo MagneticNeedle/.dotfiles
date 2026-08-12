@@ -5,6 +5,10 @@ cd "$(dirname "$0")/../.."
 cat <<'EOF'
 Still to do by hand:
 
+  brew tap FelixKratz/formulae && brew install borders
+      JankyBorders, the focus indicator aerospace starts at login. The
+      config is stowed (borders package); only the binary is missing.
+
   ./macos/swipeaerospace.sh apply
       Quit SwipeAeroSpace first -- a running instance writes its own values
       back over yours. Restart it afterwards.

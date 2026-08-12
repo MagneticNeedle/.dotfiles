@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# JankyBorders (https://github.com/FelixKratz/JankyBorders) draws a border
+# around the focused window -- aerospace itself draws nothing, so without this
+# a tiled workspace gives no hint which window has focus.
+#
+# `borders` with no arguments and no running instance executes this file; the
+# call at the bottom then hands these options to the instance that started it.
+# Aerospace launches it (after-startup-command in aerospace.toml), so no
+# `brew services start borders` is needed.
+#
+# Every option here can also be applied to the running instance from a shell,
+# which is the fastest way to try a value before writing it down:
+#   borders width=8.0 active_color=0xffff0000
+#
+# Full option list: man borders
+
+# Aerospace is started by launchd and passes on its bare PATH, which has no
+# brew in it; the call below would not find `borders` without this.
+PATH="/opt/homebrew/bin:$PATH"
+
+options=(
+  style=round
+  width=4.0
+
+  # 0xAARRGGBB. Also accepts gradient(top_left=...,bottom_right=...) and
+  # glow(0xAARRGGBB).
+  # Parentheses need quoting even inside the array -- bash parses them.
+  'active_color=gradient(top_left=0xffafff00,bottom_right=0xffff00a8)'
+  inactive_color=0xff414550
+
+  # Retina-resolution borders. Off is sharp enough at this width and cheaper.
+  hidpi=on
+)
+
+borders "${options[@]}"
