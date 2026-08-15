@@ -54,9 +54,7 @@ gaps.inner.horizontal = 0
 gaps.inner.vertical =   0
 gaps.outer.left =       0
 gaps.outer.bottom =     0
-# Sketchybar floats over the windows rather than reserving space, so this has
-# to clear its height (32 in sketchybarrc) by hand.
-gaps.outer.top =        32
+gaps.outer.top =        2
 gaps.outer.right =      0
 
 [mode.main.binding]
