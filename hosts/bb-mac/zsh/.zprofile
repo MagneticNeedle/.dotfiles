@@ -6,3 +6,4 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH
 export AI_CLI="claude"
 export EDITOR=vim
+export XDG_CONFIG_HOME="$HOME/.config"
