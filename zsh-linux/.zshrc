@@ -3,7 +3,6 @@ HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=10000
 
-ZSH_THEME="eastwood"
 plugins=(git)
 source "$HOME/.zsh/base.zsh"
 

@@ -5,8 +5,9 @@
 export LANG=en_US.UTF-8
 
 # oh-my-zsh -- hosts pick a theme/plugins by setting these before sourcing.
+# The default theme ships in this package as .oh-my-zsh/custom/edvardm-custom.zsh-theme.
 export ZSH="$HOME/.oh-my-zsh"
-: "${ZSH_THEME:=robbyrussell}"
+: "${ZSH_THEME:=edvardm-custom}"
 (( ${+plugins} )) || plugins=(git vi-mode)
 HYPHEN_INSENSITIVE="true"
 COMPLETION_WAITING_DOTS="true"
