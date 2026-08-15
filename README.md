@@ -33,6 +33,7 @@ Hosts are named `<user>-<os>`:
 | `magnetic-needle-linux` | Linux desktop            | niri, waybar, full setup     |
 | `bb-linux`              | Linux, user `bb`         | 4-space nvim indent, vert monitor |
 | `bb-mac`                | MacBook, user `bb`       | no niri/waybar               |
+| `magnetic-needle-mac`   | Mac, user `magnetic-needle` | no niri/waybar            |
 
 `install.sh` guesses the host as `$(id -un)-<mac|linux>`; pass the name
 explicitly to override.
