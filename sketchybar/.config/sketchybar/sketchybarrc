@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# SketchyBar (https://felixkratz.github.io/SketchyBar) draws the status bar
+# that stands in for the macOS menu bar, which is hidden on these machines.
+#
+# Aerospace starts it (after-startup-command in aerospace.toml) and pokes it on
+# every workspace switch, so `brew services start sketchybar` is not needed.
+# Apply edits to the running bar with: sketchybar --reload
+#
+# Every property below can also be set from a shell against the running bar,
+# which is the fastest way to try a value before writing it down:
+#   sketchybar --bar height=44
+#
+# Full property list: https://felixkratz.github.io/SketchyBar/config/bar
+
+PATH="/opt/homebrew/bin:$PATH"
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+source "$CONFIG_DIR/theme.sh"
+
+# The bar covers this much of the screen, so aerospace.toml sets
+# gaps.outer.top to the same number to keep windows out from under it.
+# macOS has no setting for how long the hidden menu bar waits before sliding
+# down on hover (the delay is private, per-process API), so an accidental
+# flick at the top edge always reveals it. topmost puts this bar above it, so
+# the reveal happens behind us and is never seen.
+sketchybar --bar height=32 \
+                 position=top \
+                 topmost=on \
+                 sticky=on \
+                 blur_radius=30 \
+                 color="$BAR_BG" \
+                 padding_left=6 \
+                 padding_right=6
+
+# Applied to every item added after this point, so each item below only has to
+# name what it does differently.
+default=(
+  padding_left=3
+  padding_right=3
+  icon.font="$ICON_FONT"
+  icon.color="$WHITE"
+  icon.padding_left=8
+  icon.padding_right=4
+  label.font="$LABEL_FONT"
+  label.color="$WHITE"
+  label.padding_left=4
+  label.padding_right=8
+  background.corner_radius=6
+  background.height=24
+)
+sketchybar --default "${default[@]}"
+
+##### Workspaces #####
+
+# Built from `aerospace list-workspaces` rather than a hard-coded list, because
+# the two macs run different workspace sets and this file is shared by both.
+for ws in $(aerospace list-workspaces --all); do
+  # Workspaces are named "<number>.<name>", e.g. "2.Code": the number is always
+  # on the bar, the name only appears on the focused one.
+  case "$ws" in
+    *.*) num="${ws%%.*}"; name="${ws#*.}" ;;
+    *)   num="$ws";       name="" ;;
+  esac
+
+  # The number sits in the icon half but is text, so it takes the text font
+  # rather than the icon one.
+  sketchybar --add item "space.$ws" left \
+             --set "space.$ws" icon="$num" \
+                               icon.font="$LABEL_FONT" \
+                               label="$name" \
+                               label.drawing=off \
+                               background.drawing=off \
+                               click_script="aerospace workspace $ws"
+done
+
+# Aerospace has no idea sketchybar exists; it just runs the command in
+# exec-on-workspace-change, which fires this event.
+sketchybar --add event aerospace_workspace_change
+
+# One invisible item repaints every workspace at once, rather than each
+# workspace item polling aerospace for itself.
+sketchybar --add item spaces_watcher left \
+           --set spaces_watcher drawing=off script="$PLUGIN_DIR/aerospace.sh" \
+           --subscribe spaces_watcher aerospace_workspace_change \
+                                      front_app_switched \
+                                      space_windows_change
+
+##### Left items #####
+
+sketchybar --add item front_app left \
+           --set front_app icon.drawing=off \
+                           label.color="$LIME" \
+                           script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
+##### Right items #####
+
+# Added right to left: clock ends up rightmost, volume leftmost.
+sketchybar --add item clock right \
+           --set clock update_freq=15 script="$PLUGIN_DIR/clock.sh" \
+           --add item battery right \
+           --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change \
+           --add item volume right \
+           --set volume script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change
+
+# Runs every script once so the bar is populated before anything happens.
+sketchybar --update

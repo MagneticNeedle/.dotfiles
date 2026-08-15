@@ -8,4 +8,9 @@ Still to do by hand:
   ./macos/swipeaerospace.sh apply
       Quit SwipeAeroSpace first -- a running instance writes its own values
       back over yours. Restart it afterwards.
+
+  brew install --cask font-hack-nerd-font
+      Both the icons and the text on the sketchybar bar come from it.
+      ~/Library/Fonts is per-user, so an account that skips this gets a bar
+      full of empty boxes even if another account on the same Mac has it.
 EOF

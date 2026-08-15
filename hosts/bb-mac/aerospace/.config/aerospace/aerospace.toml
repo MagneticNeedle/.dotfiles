@@ -8,6 +8,18 @@ after-startup-command = [
     # picks up because no arguments are passed. Absolute path -- launchd
     # hands aerospace a PATH without brew in it.
     'exec-and-forget /opt/homebrew/bin/borders',
+
+    # Status bar, configured in ~/.config/sketchybar (the `sketchybar` stow
+    # package). It replaces the macOS menu bar, which is hidden here.
+    'exec-and-forget /opt/homebrew/bin/sketchybar',
+]
+
+# The bar has no way to know a workspace changed, so tell it. The env vars are
+# aerospace's own, and the command runs with a bare PATH -- hence /bin/bash and
+# the absolute path to sketchybar.
+exec-on-workspace-change = [
+    '/bin/bash', '-c',
+    '/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
 ]
 
 start-at-login = true 
@@ -61,7 +73,7 @@ gaps.inner.horizontal = 10
 gaps.inner.vertical =   10
 gaps.outer.left =       10
 gaps.outer.bottom =     5
-gaps.outer.top =        5
+gaps.outer.top =        2
 gaps.outer.right =      10
 
 [mode.main.binding]

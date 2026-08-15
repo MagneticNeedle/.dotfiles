@@ -1,6 +1,18 @@
 config-version = 2
 
-after-startup-command = []
+after-startup-command = [
+    # Status bar, configured in ~/.config/sketchybar (the `sketchybar` stow
+    # package). It replaces the macOS menu bar, which is hidden here.
+    'exec-and-forget /opt/homebrew/bin/sketchybar',
+]
+
+# The bar has no way to know a workspace changed, so tell it. The env vars are
+# aerospace's own, and the command runs with a bare PATH -- hence /bin/bash and
+# the absolute path to sketchybar.
+exec-on-workspace-change = [
+    '/bin/bash', '-c',
+    '/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
 
 start-at-login = true 
 
@@ -42,7 +54,9 @@ gaps.inner.horizontal = 0
 gaps.inner.vertical =   0
 gaps.outer.left =       0
 gaps.outer.bottom =     0
-gaps.outer.top =        0
+# Sketchybar floats over the windows rather than reserving space, so this has
+# to clear its height (32 in sketchybarrc) by hand.
+gaps.outer.top =        32
 gaps.outer.right =      0
 
 [mode.main.binding]
