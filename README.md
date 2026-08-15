@@ -32,7 +32,7 @@ Hosts are named `<user>-<os>`:
 |-------------------------|--------------------------|------------------------------|
 | `magnetic-needle-linux` | Linux desktop            | niri, waybar, full setup     |
 | `bb-linux`              | Linux, user `bb`         | 4-space nvim indent, vert monitor |
-| `bb-mac`                | MacBook, user `bb`       | no niri/waybar; own zshrc    |
+| `bb-mac`                | MacBook, user `bb`       | no niri/waybar               |
 
 `install.sh` guesses the host as `$(id -un)-<mac|linux>`; pass the name
 explicitly to override.
@@ -71,9 +71,11 @@ Pick one, in order of preference:
    - *nvim*: shared `init.lua` ends with `pcall(require, 'host')`; a host
      package may provide `.config/nvim/lua/host.lua` (see `bb-linux`,
      which sets 4-space indent there).
-   - *zsh*: the shared `.zshrc` sources `~/.zshrc.local` if it exists —
-     put machine-only PATH entries and hacks in a host package as
-     `zsh-local/.zshrc.local`, or leave it untracked on the machine.
+   - *zsh*: each host's `.zshrc` sets its overrides (`ZSH_THEME`, `plugins`,
+     `HISTFILE`), sources the shared `~/.zsh/base.zsh` from the `zsh`
+     package, then adds host-only aliases/paths after it. The macs keep
+     their `.zshrc` in `hosts/<name>/zsh/`; the linux hosts are identical
+     to each other, so theirs lives once in the `zsh-linux` package.
    - *zellij*: layouts have no include mechanism, so the shared `dev.kdl`
      runs `ai` — a shim in the `bin` package that execs `$AI_CLI`
      (default `pi`). A host picks its CLI by exporting `AI_CLI` in its
@@ -83,9 +85,7 @@ Pick one, in order of preference:
 2. **The file is irreconcilably different — give each host its own.**
    niri's `config.kdl` (outputs, workspaces, absolute home paths) lives in
    `hosts/<name>/niri/.config/niri/config.kdl`; the shared `niri` package
-   keeps only what's identical (scripts, bin). Same idea for the mac's
-   oh-my-zsh `.zshrc` at `hosts/bb-mac/zsh/.zshrc` — the mac doesn't stow the
-   shared `zsh` package at all.
+   keeps only what's identical (scripts, bin).
 
 Host packages layer cleanly on top of shared ones because of
 `--no-folding`: both can contribute files to the same directory, e.g. a host
