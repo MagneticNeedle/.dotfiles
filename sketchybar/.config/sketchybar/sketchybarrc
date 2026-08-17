@@ -94,7 +94,7 @@ sketchybar --add item front_app left \
 
 ##### Right items #####
 
-# Added right to left: clock ends up rightmost, volume leftmost.
+# Added right to left: clock ends up rightmost, the wifi address leftmost.
 sketchybar --add item clock right \
            --set clock update_freq=15 script="$PLUGIN_DIR/clock.sh" \
            --add item battery right \
@@ -103,6 +103,23 @@ sketchybar --add item clock right \
            --add item volume right \
            --set volume script="$PLUGIN_DIR/volume.sh" \
            --subscribe volume volume_change
+
+# wifi_change only fires on join/leave, so the poll is what catches an address
+# changing under a network we are already on.
+#
+# The address is its own item purely so it can sit on the far side of the
+# glyph: an item draws its icon first and its label second, and these want to
+# read as "<ip> <glyph> <ssid>".
+sketchybar --add item wifi right \
+           --set wifi update_freq=60 \
+                      icon="$NF_WIFI" \
+                      script="$PLUGIN_DIR/wifi.sh" \
+           --subscribe wifi wifi_change system_woke \
+           --add item wifi.ip right \
+           --set wifi.ip icon.drawing=off \
+                         label.color="$DIM" \
+                         label.padding_right=0 \
+                         padding_right=0
 
 # Runs every script once so the bar is populated before anything happens.
 sketchybar --update

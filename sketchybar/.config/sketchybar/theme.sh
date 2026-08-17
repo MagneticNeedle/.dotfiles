@@ -36,3 +36,4 @@ NF_CHARGING=""  # f0e7
 NF_VOL_HIGH=""  # f028
 NF_VOL_LOW=""   # f027
 NF_VOL_MUTE=""  # f026
+NF_WIFI=""      # f1eb
