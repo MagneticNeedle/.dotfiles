@@ -24,7 +24,7 @@ source "$CONFIG_DIR/theme.sh"
 # the reveal happens behind us and is never seen.
 sketchybar --bar height=32 \
                  position=top \
-                 topmost=on \
+                 topmost=off \
                  sticky=on \
                  blur_radius=30 \
                  color="$BAR_BG" \
