@@ -46,7 +46,7 @@ on-window-detected = [
 
 on-mode-changed = []
 
-focus-follows-mouse.enabled = true 
+focus-follows-mouse.enabled = false
 
 key-mapping.preset = 'qwerty'
 
