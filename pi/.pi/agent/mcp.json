@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "kaneo": {
+      "url": "https://labs.bfportal.gg/api/mcp",
+      "exposure": "codemode",
+      "description": "Kaneo task tracker: workspaces, projects, tasks, custom fields, time entries, comments, labels"
+    },
+    "notion": {
+      "url": "https://mcp.notion.com/mcp",
+      "exposure": "codemode",
+      "description": "Search, read, and edit Notion pages, databases, and comments in your workspace"
+    }
+  }
+}
