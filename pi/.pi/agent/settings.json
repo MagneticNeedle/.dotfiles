@@ -1,10 +1,17 @@
 {
-  "lastChangelogVersion": "0.84.1",
+  "lastChangelogVersion": "1.5.2",
   "theme": "dark",
   "defaultProvider": "opencode",
   "defaultModel": "deepseek-v4.1-flash",
   "defaultThinkingLevel": "high",
   "packages": [
-    "npm:pi-web-access"
-  ]
+    "npm:pi-web-access",
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:pi-permission-modes"
+  ],
+  "hideThinkingBlock": true,
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
+    "{\"source\":\"npm:pi-permission-modes\",\"scope\":\"user\"}": "2.7.2"
+  }
 }
