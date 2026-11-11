@@ -1,14 +1,18 @@
 config-version = 2
 
 after-startup-command = [
-    # Status bar, configured in ~/.config/sketchybar (the `sketchybar` stow
-    # package). It replaces the macOS menu bar, which is hidden here.
     'exec-and-forget /opt/homebrew/bin/sketchybar',
+    'exec-and-forget /opt/homebrew/bin/borders',
+
+    # Root container layouts are created once and then persist for the whole session
+    # (even when the workspace becomes empty), so `default-root-container-layout`
+    # does not retroactively fix existing workspaces. Force accordion on every start.
+    'layout --workspace 1.Browser --root accordion',
+    'layout --workspace 2.Code --root accordion',
+    'layout --workspace 3.Chat --root accordion',
+    'layout --workspace 4.ScratchPad --root accordion',
 ]
 
-# The bar has no way to know a workspace changed, so tell it. The env vars are
-# aerospace's own, and the command runs with a bare PATH -- hence /bin/bash and
-# the absolute path to sketchybar.
 exec-on-workspace-change = [
     '/bin/bash', '-c',
     '/opt/homebrew/bin/sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
@@ -21,11 +25,11 @@ auto-reload-config = true
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 
-accordion-padding = 0
+accordion-padding = 50 
 
-default-root-container-layout = 'tiles'
+default-root-container-layout = 'accordion'
 
-default-root-container-orientation = 'auto'
+default-root-container-orientation = 'horizontal'
 
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
@@ -37,10 +41,6 @@ on-window-detected = [
     {
         if = 'test %{app-bundle-id} = org.mozilla.firefox',
         run = 'move-node-to-workspace 1.Browser',
-    },
-    {
-        if = 'test %{workspace} = 2.Code',
-        run = 'layout h_accordion',
     },
 ]
 
@@ -67,6 +67,8 @@ gaps.outer.right =      0
     alt-j = 'focus down'
     alt-k = 'focus up'
     alt-l = 'focus right'
+    alt-n = 'focus --boundaries workspace --boundaries-action wrap-around-the-workspace dfs-next'
+    alt-p = 'focus --boundaries workspace --boundaries-action wrap-around-the-workspace dfs-prev'
 
     alt-shift-h = 'move left'
     alt-shift-j = 'move down'
@@ -93,7 +95,7 @@ gaps.outer.right =      0
 
 [mode.service.binding]
     esc = ['reload-config', 'mode main']
-    r = ['flatten-workspace-tree', 'mode main'] # reset layout
+    r = ['flatten-workspace-tree', 'layout --root accordion', 'mode main'] # reset layout to a flat accordion
     f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main']
 
