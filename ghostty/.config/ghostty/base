@@ -1,0 +1,2 @@
+background = #000000
+keybind = shift+enter=text:\x1b\r
