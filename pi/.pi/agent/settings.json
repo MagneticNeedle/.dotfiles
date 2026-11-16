@@ -1,17 +1,57 @@
 {
   "lastChangelogVersion": "1.5.2",
   "theme": "dark",
-  "defaultProvider": "opencode",
+  "defaultProvider": "opencode-go",
   "defaultModel": "deepseek-v4.1-flash",
   "defaultThinkingLevel": "high",
   "packages": [
     "npm:pi-web-access",
     "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:pi-permission-modes"
+    "npm:pi-permission-modes",
+    "npm:pi-impeccable",
+    "npm:pi-subagents"
   ],
   "hideThinkingBlock": true,
+  "subagents": {
+    "defaultModel": "opencode-go/gpt-6-luna",
+    "defaultThinking": "medium",
+    "agentOverrides": {
+      "scout": {
+        "model": "opencode/glm-5.3-flash-free",
+        "thinking": "low"
+      },
+      "delegate": {
+        "model": "opencode-go/gpt-6-luna",
+        "thinking": "medium"
+      },
+      "worker": {
+        "model": "opencode-go/gpt-5.6-luna",
+        "thinking": "medium"
+      },
+      "reviewer": {
+        "model": "opencode-go/gpt-5.6-luna",
+        "thinking": "high"
+      },
+      "oracle": {
+        "model": "opencode-go/gpt-5.6-luna",
+        "thinking": "high"
+      }
+    },
+    "modelScope": {
+      "enforce": true,
+      "allow": [
+        "inherit",
+        "opencode-go/*",
+        "opencode/*"
+      ]
+    }
+  },
   "extensionChangelogVersions": {
-    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
-    "{\"source\":\"npm:pi-permission-modes\",\"scope\":\"user\"}": "2.7.2"
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.48.0",
+    "{\"source\":\"npm:pi-permission-modes\",\"scope\":\"user\"}": "2.7.2",
+    "{\"source\":\"npm:pi-impeccable\",\"scope\":\"user\"}": "0.1.0",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.88.1",
+    "{\"source\":\"npm:pi-free\",\"scope\":\"user\"}": "2.9.0",
+    "{\"source\":\"../../programming/third-party/pi-free\",\"scope\":\"user\"}": "2.9.0"
   }
 }
