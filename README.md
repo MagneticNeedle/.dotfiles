@@ -69,6 +69,10 @@ Pick one, in order of preference:
    - *alacritty*: each host owns `alacritty.toml` (font, size, shell,
      window) and imports the shared `base.toml` from the alacritty
      package. The importing file wins on conflicts.
+   - *ghostty*: same shape — each host owns `config` and pulls in the
+     shared `base` with `config-file = ~/.config/ghostty/base`. Only
+     `magnetic-needle-mac` runs ghostty so far; alacritty is kept
+     alongside it while the switch happens.
    - *nvim*: shared `init.lua` ends with `pcall(require, 'host')`; a host
      package may provide `.config/nvim/lua/host.lua` (see `bb-linux`,
      which sets 4-space indent there).
