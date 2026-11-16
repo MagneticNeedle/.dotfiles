@@ -15,3 +15,7 @@ __pycache__/
 **/.local/bin/uvx
 **/.local/bin/python3*
 /.claude
+
+# Real docker CLI config: docker login writes registry credentials into it.
+# Keep it out of the repo; docker/.docker/config.json.example is the tracked shape.
+/docker/.docker/config.json
