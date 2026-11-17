@@ -52,10 +52,10 @@ key-mapping.preset = 'qwerty'
 
 gaps.inner.horizontal = 0
 gaps.inner.vertical =   0
-gaps.outer.left =       0
-gaps.outer.bottom =     0
+gaps.outer.left =       4
+gaps.outer.bottom =     4
 gaps.outer.top =        4
-gaps.outer.right =      0
+gaps.outer.right =      4
 
 [mode.main.binding]
 
