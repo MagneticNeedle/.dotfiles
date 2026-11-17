@@ -283,9 +283,19 @@ load_plugins {
 // simplified_ui true
  
 // Choose the theme that is specified in the themes section.
+// Setting this pins the session to one theme and turns off the automatic
+// dark/light switching described below.
 // Default: default
 // 
 // theme "dracula"
+ 
+// Pin the session to a dark or light appearance, ignoring what the host
+// terminal reports (the terminal reports light on this machine, which made
+// the tab bar white while the terminal background is black).
+// Options: dark, light
+// 
+// explicit_theme_hue "dark"
+explicit_theme_hue "dark"
  
 // Choose the base input mode of zellij.
 // Default: normal
@@ -466,3 +476,4 @@ show_startup_tips false
 // Default: true
 // 
 // show_release_notes false
+on_quit "quit"
