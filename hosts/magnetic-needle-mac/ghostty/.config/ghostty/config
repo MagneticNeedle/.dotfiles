@@ -6,6 +6,7 @@ font-size = 20
 background-opacity = 0.85
 maximize = true
 macos-window-buttons = hidden
+macos-titlebar-style = hidden
 
 window-padding-x = 10
 window-padding-y = 0
