@@ -1,0 +1,20 @@
+// Minimal layout: two plain shells, no ai / git tabs.
+// Panes inherit the cwd from wherever `zellij` is launched (the `zj` script cd's
+// into the project first), so this layout is reusable across projects.
+layout {
+    // every tab gets a tab bar on top
+    default_tab_template {
+        children
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+    }
+
+    tab name="main" focus=true {
+        pane
+    }
+
+    tab name="aux" {
+        pane
+    }
+}
