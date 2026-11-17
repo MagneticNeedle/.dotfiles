@@ -9,6 +9,21 @@
       "url": "https://mcp.notion.com/mcp",
       "exposure": "codemode",
       "description": "Search, read, and edit Notion pages, databases, and comments in your workspace"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--browser",
+        "chrome",
+        "--headless",
+        "--isolated",
+        "--viewport-size",
+        "1440,900"
+      ],
+      "exposure": "codemode",
+      "description": "Headless Chrome for page screenshots and DOM inspection (Playwright MCP)"
     }
   }
 }
