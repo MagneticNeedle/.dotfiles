@@ -1,2 +1,5 @@
 background = #000000
 keybind = shift+enter=text:\x1b\r
+
+// ghostty has no per-side padding, so this is top + bottom
+window-padding-y = 5
