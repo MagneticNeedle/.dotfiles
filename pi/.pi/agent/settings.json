@@ -9,7 +9,8 @@
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:pi-permission-modes",
     "npm:pi-impeccable",
-    "npm:pi-subagents"
+    "npm:pi-subagents",
+    "npm:pi-code-render"
   ],
   "hideThinkingBlock": true,
   "subagents": {
@@ -50,7 +51,7 @@
     "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.48.0",
     "{\"source\":\"npm:pi-permission-modes\",\"scope\":\"user\"}": "2.7.2",
     "{\"source\":\"npm:pi-impeccable\",\"scope\":\"user\"}": "0.1.0",
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.89.0",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.89.1",
     "{\"source\":\"npm:pi-free\",\"scope\":\"user\"}": "2.9.0",
     "{\"source\":\"../../programming/third-party/pi-free\",\"scope\":\"user\"}": "2.9.0"
   }

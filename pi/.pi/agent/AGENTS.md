@@ -9,6 +9,7 @@
 # Coding
 1. in code only add comments for things that are very non obvious to understand by reading the code
 2. Follow Write everything twice, as soon as you see something being written for the third time, abstract or move it to a common place
+3. For comment be very selective, only comment on things that once cant understand quickly without reading the code.
 
 
 # Commiting
