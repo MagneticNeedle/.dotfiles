@@ -13,6 +13,7 @@
     "npm:pi-code-render"
   ],
   "hideThinkingBlock": true,
+  "externalEditor": "vim",
   "subagents": {
     "defaultModel": "opencode-go/gpt-6-luna",
     "defaultThinking": "medium",
