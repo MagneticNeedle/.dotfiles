@@ -2,7 +2,6 @@ background = #000000
 # pin dark: ghostty answers the terminal's dark/light query (mode 2031) from
 # this, and zellij switches to its light theme when the answer is light
 window-theme = dark
-keybind = shift+enter=text:\x1b\r
 
 # ghostty has no per-side padding, so this is top + bottom
 window-padding-y = 10
